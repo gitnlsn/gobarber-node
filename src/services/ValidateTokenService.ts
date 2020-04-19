@@ -39,7 +39,7 @@ class ValidateTokenService {
         try {
             decoded = verify(token, this.signKey) as TokenPayload;
         } catch (error) {
-            return null;
+            throw new AppError('Invalid crendentials');
         }
 
         const {
@@ -48,15 +48,15 @@ class ValidateTokenService {
             iat: issuedAt,
         } = decoded;
 
-        if (this.invalidUser(userId) || this.invalidDate(issuedAt, expiresIn)) {
-            return null;
+        if (await this.invalidUser(userId) || this.invalidDate(issuedAt, expiresIn)) {
+            throw new AppError('Invalid crendentials');
         }
 
         return userId;
     }
 
-    invalidUser(userId: string): boolean {
-        const existingUser = this.userRepo.findOne({
+    async invalidUser(userId: string): Promise<boolean> {
+        const existingUser = await this.userRepo.findOne({
             id: userId,
         });
         return !existingUser;
@@ -65,8 +65,8 @@ class ValidateTokenService {
     /* eslint-disable-next-line class-methods-use-this */
     invalidDate(issuedAt: number, expiresIn: number): boolean {
         const now = new Date().getTime();
-        const invalidIssueDate = now < issuedAt;
-        const expired = now > expiresIn;
+        const invalidIssueDate = now < issuedAt * 1000;
+        const expired = now > expiresIn * 1000;
 
         return invalidIssueDate || expired;
     }

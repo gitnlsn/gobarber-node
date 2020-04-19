@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import Users from '../models/Users';
 import AppError from '../errors/AppError';
 
-
 interface UserProps {
     email: string;
     password: string;
@@ -32,13 +31,16 @@ class AuthenticateUserService {
         });
 
         if (!existingUser) {
-            return null;
+            throw new AppError('Invalid crendentials');
         }
 
-        const passwordMatches = await compare(existingUser.password, userProps.password);
+        const passwordMatches = await compare(
+            userProps.password,
+            existingUser.password,
+        ); /* order is important */
 
         if (!passwordMatches) {
-            return null;
+            throw new AppError('Invalid crendentials');
         }
 
         /* Avoids returning password to user */

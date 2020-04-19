@@ -1,7 +1,8 @@
 import { hashSync } from 'bcryptjs';
 import validator from 'validator';
 
-import { Repository } from 'typeorm';
+import { Repository, InsertResult } from 'typeorm';
+import { GeneratedMetadataArgs } from 'typeorm/metadata-args/GeneratedMetadataArgs';
 import AppError from '../errors/AppError';
 
 import Users from '../models/Users';
@@ -49,12 +50,18 @@ class RegisterUserService {
         if (userProps.name) newUser.name = userProps.name;
         newUser.email = userProps.email;
         newUser.password = hashSync(userProps.password);
-        const createdUser = await this.userRepo.save(newUser);
+
+        const { generatedMaps: [createdUser] } = await this.userRepo
+            .createQueryBuilder()
+            .insert()
+            .values(newUser)
+            .returning('*')
+            .execute();
 
         /* Avoids returning password to user */
         delete createdUser.password;
 
-        return createdUser;
+        return createdUser as Users;
     }
 }
 

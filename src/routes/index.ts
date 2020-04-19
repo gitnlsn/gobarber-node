@@ -1,9 +1,5 @@
-import { Router, Request, Response } from 'express';
+import AuthenticationRoute from './AuthenticationRoute';
 
-const routes = Router();
-
-routes.get('/', (request: Request, response: Response) => {
-    response.json({ message: 'Hello world' });
-});
-
-export default routes;
+export default {
+    AuthenticationRoute,
+};
