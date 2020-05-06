@@ -1,43 +1,42 @@
-import { verify } from 'jsonwebtoken';
 import { Repository } from 'typeorm';
 
+import { inject, injectable } from 'tsyringe';
+
+import Users from '../database/models/Users';
 import AppError from '../errors/AppError';
-import Users from '../models/Users';
+import { SecurityProvider } from './container';
 
 interface Input {
     token: string;
 }
-interface TokenPayload {
+
+export interface TokenPayload {
     iat: number;
     exp: number;
     sub: string;
 }
 
 interface Returnable {
-    userId: string;
+    user: Users;
+    token: string;
 }
 
 /**
  *  Use Case: user has credentials in the database and requests a jwt token.
  *  Email and password are provided to validate credentials.
  */
+@injectable()
 class ValidateTokenService {
-    private userRepo: Repository<Users>;
+    constructor(
+        @inject('UsersRepository') private userRepo: Repository<Users>,
+        @inject('SecurityService') private security: SecurityProvider,
+    ) { }
 
-    private signKey: string;
-
-    constructor(repo: Repository<Users>, signKey: string) {
-        this.userRepo = repo;
-        this.signKey = signKey;
-    }
-
-    public async execute({
-        token,
-    }: Input): Promise<string | null> {
+    public async execute({ token }: Input): Promise<Returnable> {
         let decoded;
 
         try {
-            decoded = verify(token, this.signKey) as TokenPayload;
+            decoded = this.security.decodeJwt(token) as TokenPayload;
         } catch (error) {
             throw new AppError('Invalid crendentials');
         }
@@ -48,18 +47,17 @@ class ValidateTokenService {
             iat: issuedAt,
         } = decoded;
 
-        if (await this.invalidUser(userId) || this.invalidDate(issuedAt, expiresIn)) {
-            throw new AppError('Invalid crendentials');
-        }
-
-        return userId;
-    }
-
-    async invalidUser(userId: string): Promise<boolean> {
         const existingUser = await this.userRepo.findOne({
             id: userId,
         });
-        return !existingUser;
+
+        if (!existingUser || this.invalidDate(issuedAt, expiresIn)) {
+            throw new AppError('Invalid crendentials');
+        }
+
+        delete existingUser.password;
+
+        return { user: existingUser, token };
     }
 
     /* eslint-disable-next-line class-methods-use-this */

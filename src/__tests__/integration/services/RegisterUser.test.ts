@@ -1,4 +1,7 @@
+import 'reflect-metadata';
 import { isUuid } from 'uuidv4';
+import { container } from 'tsyringe';
+
 import {
     getRepository,
     Connection,
@@ -6,8 +9,12 @@ import {
 } from 'typeorm';
 import { createHash } from 'crypto';
 
-import Users from '../../../models/Users';
+import registerRepositories from '../../../database/container';
+import registerServices from '../../../services/container';
+
+import Users from '../../../database/models/Users';
 import RegisterUserService from '../../../services/RegisterUserService';
+import SecurityService from '../../../services/SecurityService';
 
 describe('Register User', () => {
     let connection: Connection;
@@ -18,6 +25,8 @@ describe('Register User', () => {
     beforeAll(async () => {
         connection = await createConnection();
         await connection.runMigrations();
+        registerRepositories();
+        registerServices();
     });
 
     afterEach(async () => {
@@ -28,11 +37,10 @@ describe('Register User', () => {
         await connection.close();
     });
 
-    it('Should return User', async () => {
-        const userRepo = getRepository(Users);
-        const service = new RegisterUserService(userRepo);
+    it('Should return User data', async () => {
+        const service = container.resolve(RegisterUserService);
 
-        const returnedUser = await service.execute({
+        const { user: returnedUser } = await service.execute({
             name: validUserName,
             email: validEmail,
             password: validPassword,
@@ -43,9 +51,25 @@ describe('Register User', () => {
         expect(returnedUser.password).toBe(undefined);
     });
 
+    it('Should return token', async () => {
+        const securityService = container.resolve(SecurityService);
+        const registerService = container.resolve(RegisterUserService);
+
+        const { token } = await registerService.execute({
+            name: validUserName,
+            email: validEmail,
+            password: validPassword,
+        });
+
+        const decodedToken = securityService.decodeJwt(token);
+        expect(decodedToken).toHaveProperty('iat');
+        expect(decodedToken).toHaveProperty('sub');
+        expect(decodedToken).toHaveProperty('exp');
+    });
+
     it('Should insert user in repository', async () => {
         const userRepo = getRepository(Users);
-        const service = new RegisterUserService(userRepo);
+        const service = container.resolve(RegisterUserService);
 
         await service.execute({
             name: validUserName,
@@ -64,12 +88,11 @@ describe('Register User', () => {
     });
 
     it('Should throw if username is invalid', async () => {
-        const userRepo = getRepository(Users);
-        const service = new RegisterUserService(userRepo);
+        const service = container.resolve(RegisterUserService);
 
         await expect(
             service.execute({
-                name: '#$##@!$#@!$@',
+                name: '#$ ## @!$#@!$@',
                 email: validEmail,
                 password: validPassword,
             }),
@@ -77,8 +100,7 @@ describe('Register User', () => {
     });
 
     it('Should throw if email is invalid', async () => {
-        const userRepo = getRepository(Users);
-        const service = new RegisterUserService(userRepo);
+        const service = container.resolve(RegisterUserService);
 
         await expect(
             service.execute({
@@ -90,8 +112,7 @@ describe('Register User', () => {
     });
 
     it('Should throw if password is invalid', async () => {
-        const userRepo = getRepository(Users);
-        const service = new RegisterUserService(userRepo);
+        const service = container.resolve(RegisterUserService);
 
         await expect(
             service.execute({
@@ -103,8 +124,7 @@ describe('Register User', () => {
     });
 
     it('Should throw if user already exists', async () => {
-        const userRepo = getRepository(Users);
-        const service = new RegisterUserService(userRepo);
+        const service = container.resolve(RegisterUserService);
 
         await service.execute({
             name: validUserName,

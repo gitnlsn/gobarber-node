@@ -22,6 +22,8 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "no-useless-constructor": "off",
+        "class-methods-use-this": "off",
         // Indent with 4 spaces
         "indent": ["error", 4],
 

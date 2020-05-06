@@ -1,11 +1,14 @@
+import 'reflect-metadata';
+
 import { hashSync } from 'bcryptjs';
+import { injectable, inject } from 'tsyringe';
 import validator from 'validator';
 
-import { Repository, InsertResult } from 'typeorm';
-import { GeneratedMetadataArgs } from 'typeorm/metadata-args/GeneratedMetadataArgs';
+import { Repository } from 'typeorm';
 import AppError from '../errors/AppError';
 
-import Users from '../models/Users';
+import Users from '../database/models/Users';
+import { SecurityProvider } from './container';
 
 interface UserProps {
     name?: string;
@@ -13,24 +16,41 @@ interface UserProps {
     password: string;
 }
 
+interface Returnable {
+    user: Users;
+    token: string;
+}
+
+export const validFullName: (fullname: string) => boolean = (fullname) => {
+    if (!fullname) {
+        return false;
+    }
+
+    const invalidName = fullname
+        .split(' ')
+        .find((name) => !validator.isAlpha(name));
+
+    return !invalidName;
+};
+
 /**
  *  Use Case: user has no credentials in the database.
  *  Email and password are provided to create credentials.
  *  Returns created User from database, otherwise throws Error.
  */
+@injectable()
 class RegisterUserService {
-    private userRepo: Repository<Users>;
+    constructor(
+        @inject('UsersRepository') private userRepo: Repository<Users>,
+        @inject('SecurityService') private security: SecurityProvider,
+    ) { }
 
-    constructor(repo: Repository<Users>) {
-        this.userRepo = repo;
-    }
-
-    public async execute(userProps: UserProps): Promise<Users> {
+    public async execute(userProps: UserProps): Promise<Returnable> {
         if (!validator.isEmail(userProps.email)) {
             throw new AppError('Invalid email');
         }
 
-        if (userProps.name && !validator.isAlpha(userProps.name)) {
+        if (userProps.name && !validFullName(userProps.name)) {
             throw new AppError('Invalid username');
         }
 
@@ -61,7 +81,9 @@ class RegisterUserService {
         /* Avoids returning password to user */
         delete createdUser.password;
 
-        return createdUser as Users;
+        const token = this.security.signJwt(createdUser.id);
+
+        return { user: createdUser as Users, token };
     }
 }
 

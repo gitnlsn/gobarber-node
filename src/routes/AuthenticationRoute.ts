@@ -1,73 +1,82 @@
-import { Router, Request, Response } from 'express';
-import { getRepository, createConnection } from 'typeorm';
+import {
+    Router, Request, Response, NextFunction,
+} from 'express';
 
-import { getJwtSignKey } from '../services/SecurityService';
+import { container } from 'tsyringe';
 
-import Users from '../models/Users';
 import RegisterUserService from '../services/RegisterUserService';
 import AuthenticateUserService from '../services/AuthenticateUserService';
 import ValidateTokenService from '../services/ValidateTokenService';
 
-createConnection();
 const routes = Router();
-const jwtKey = getJwtSignKey();
 
 /**
  * Register route
  */
-routes.post('/register', async (request: Request, response: Response) => {
-    const {
-        email,
-        password,
-    } = request.body;
+routes.post('/register', async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const {
+            email,
+            password,
+        } = request.body;
 
-    const userRepo = getRepository(Users);
-    const service = new RegisterUserService(userRepo);
+        const service = container.resolve(RegisterUserService);
 
-    const userProps = await service.execute({
-        email,
-        password,
-    });
+        const { user, token } = await service.execute({
+            email,
+            password,
+        });
 
-    return response.status(200).json(userProps);
+        return response.status(200).json({ user, token });
+    } catch (error) {
+        return next(error);
+    }
 });
 
 /**
  * Authenticate route
  */
-routes.post('/authenticate', async (request: Request, response: Response) => {
-    const {
-        email,
-        password,
-    } = request.body;
+routes.post('/authenticate', async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const {
+            email,
+            password,
+        } = request.body;
 
-    const userRepo = getRepository(Users);
-    const service = new AuthenticateUserService(userRepo, jwtKey);
+        const service = container.resolve(AuthenticateUserService);
 
-    const token = await service.execute({
-        email,
-        password,
-    });
+        const { user, token } = await service.execute({
+            email,
+            password,
+        });
 
-    return response.status(200).json({ token });
+        return response.status(200).json({ user, token });
+    } catch (error) {
+        return next(error);
+    }
 });
 
 /**
  * Validate Jwt
  */
-routes.post('/validate-token', async (request: Request, response: Response) => {
-    const {
-        token,
-    } = request.body;
+routes.post('/validate-token', async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const {
+            token,
+        } = request.body;
 
-    const userRepo = getRepository(Users);
-    const service = new ValidateTokenService(userRepo, jwtKey);
+        const service = container.resolve(ValidateTokenService);
 
-    const userId = await service.execute({
-        token,
-    });
+        const {
+            user,
+        } = await service.execute({
+            token,
+        });
 
-    return response.status(200).json({ userId });
+        return response.status(200).json({ user, token });
+    } catch (error) {
+        return next(error);
+    }
 });
 
 

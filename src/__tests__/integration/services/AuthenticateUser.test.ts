@@ -1,23 +1,30 @@
+import 'reflect-metadata';
+import { container } from 'tsyringe';
+
 import {
-    getRepository,
     Connection,
     createConnection,
 } from 'typeorm';
 import { createHash } from 'crypto';
-import { verify } from 'jsonwebtoken';
 
-import Users from '../../../models/Users';
+import registerRepositories from '../../../database/container';
+import registerServices from '../../../services/container';
+
 import RegisterUserService from '../../../services/RegisterUserService';
 import AuthenticateUserService from '../../../services/AuthenticateUserService';
+import SecurityService from '../../../services/SecurityService';
 
 describe('Authenticate User', () => {
     let connection: Connection;
-    const jwtSignKey = 'jwt incredibly long key and randomly generated';
+    const userName = 'john doe';
     const userEmail = 'test@mail.com';
     const userPassword = createHash('sha256').update('password').digest('hex');
 
     beforeAll(async () => {
         connection = await createConnection();
+        await connection.runMigrations();
+        registerRepositories();
+        registerServices();
     });
 
     afterEach(async () => {
@@ -28,63 +35,79 @@ describe('Authenticate User', () => {
         await connection.close();
     });
 
+    it('Should return user data', async () => {
+        const registerService = container.resolve(RegisterUserService);
+        const authService = container.resolve(AuthenticateUserService);
+
+        await registerService.execute({
+            name: userName,
+            email: userEmail,
+            password: userPassword,
+        });
+
+        const { user } = await authService.execute({
+            email: userEmail,
+            password: userPassword,
+        });
+
+        expect(user.name).toBe(userName);
+        expect(user.email).toBe(userEmail);
+        expect(user.password).toBe(undefined);
+    });
+
     it('Should return token', async () => {
-        const userRepo = getRepository(Users);
-        const registerService = new RegisterUserService(userRepo);
-        const authService = new AuthenticateUserService(userRepo, jwtSignKey);
+        const registerService = container.resolve(RegisterUserService);
+        const authService = container.resolve(AuthenticateUserService);
+        const securityService = container.resolve(SecurityService);
 
         await registerService.execute({
             email: userEmail,
             password: userPassword,
         });
 
-        const token = await authService.execute({
+        const { token } = await authService.execute({
             email: userEmail,
             password: userPassword,
         });
 
-        if (token) {
-            const decodedToken = verify(token, jwtSignKey);
-            expect(decodedToken).toHaveProperty('iat');
-            expect(decodedToken).toHaveProperty('sub');
-            expect(decodedToken).toHaveProperty('exp');
-        }
+        const decodedToken = securityService.decodeJwt(token);
+        expect(decodedToken).toHaveProperty('iat');
+        expect(decodedToken).toHaveProperty('sub');
+        expect(decodedToken).toHaveProperty('exp');
     });
 
 
-    it('Should return null if email is invalid', async () => {
-        const userRepo = getRepository(Users);
-        const registerService = new RegisterUserService(userRepo);
-        const authService = new AuthenticateUserService(userRepo, jwtSignKey);
+    it('Should throw if email is invalid', async () => {
+        const registerService = container.resolve(RegisterUserService);
+        const authService = container.resolve(AuthenticateUserService);
 
         await registerService.execute({
             email: userEmail,
             password: userPassword,
         });
 
-        const token = await authService.execute({
-            email: 'invalid @ mail',
-            password: userPassword,
-        });
-
-        expect(token).toBe(null);
+        expect(
+            authService.execute({
+                email: 'invalid @ mail',
+                password: userPassword,
+            }),
+        ).rejects.toThrow();
     });
 
-    it('Should return null if password is invalid', async () => {
-        const userRepo = getRepository(Users);
-        const registerService = new RegisterUserService(userRepo);
-        const authService = new AuthenticateUserService(userRepo, jwtSignKey);
+    it('Should throw if password is invalid', async () => {
+        const registerService = container.resolve(RegisterUserService);
+        const authService = container.resolve(AuthenticateUserService);
 
         await registerService.execute({
             email: userEmail,
             password: userPassword,
         });
 
-        const token = await authService.execute({
-            email: userEmail,
-            password: 'invalid password',
-        });
-
-        expect(token).toBe(null);
+        expect(
+            authService.execute({
+                email: userEmail,
+                password: 'invalid password',
+            }),
+        ).rejects.toThrow();
     });
 });

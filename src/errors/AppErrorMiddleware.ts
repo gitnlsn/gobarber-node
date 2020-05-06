@@ -10,15 +10,15 @@ const middleware: (
     response: Response,
     next: NextFunction
 ) => void = (error, request, response, _) => {
-    if (error instanceof AppError) {
-        return response.status(error.statusCode).json({
+    if (error.name === 'AppError') {
+        return response.status((error as AppError).statusCode).json({
             status: 'error',
             message: error.message,
         });
     }
 
+    console.error(error.name);
     /* eslint-disable-next-line no-console */
-    console.error(error);
     return response.status(500).json({
         status: 'error',
         message: 'Internal server error',

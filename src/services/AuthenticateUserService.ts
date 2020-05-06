@@ -1,13 +1,19 @@
 import { compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
+import { injectable, inject } from 'tsyringe';
 
 import { Repository } from 'typeorm';
-import Users from '../models/Users';
+import Users from '../database/models/Users';
 import AppError from '../errors/AppError';
+import { SecurityProvider } from './container';
 
 interface UserProps {
     email: string;
     password: string;
+}
+
+interface Returnable {
+    user: Users;
+    token: string;
 }
 
 /**
@@ -15,17 +21,14 @@ interface UserProps {
  *  Email and password are provided to validate credentials.
  *  Returns token if credentials matches, otherwise null.
  */
+@injectable()
 class AuthenticateUserService {
-    private userRepo: Repository<Users>;
+    constructor(
+        @inject('UsersRepository') private userRepo: Repository<Users>,
+        @inject('SecurityService') private security: SecurityProvider,
+    ) { }
 
-    private signKey: string;
-
-    constructor(repo: Repository<Users>, signKey: string) {
-        this.userRepo = repo;
-        this.signKey = signKey;
-    }
-
-    public async execute(userProps: UserProps): Promise<string | null> {
+    public async execute(userProps: UserProps): Promise<Returnable> {
         const existingUser = await this.userRepo.findOne({
             email: userProps.email,
         });
@@ -46,12 +49,9 @@ class AuthenticateUserService {
         /* Avoids returning password to user */
         delete existingUser.password;
 
-        const token = sign({}, this.signKey, {
-            subject: existingUser.id,
-            expiresIn: '1d',
-        });
+        const token = this.security.signJwt(existingUser.id);
 
-        return token;
+        return { user: existingUser, token };
     }
 }
 
