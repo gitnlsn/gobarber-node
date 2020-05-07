@@ -9,7 +9,7 @@ import { container } from 'tsyringe';
 import registerRepositories from '../../../database/container';
 import registerServices from '../../../services/container';
 
-import Users from '../../../database/models/Users';
+import Users from '../../../database/models/User';
 import RegisterUserService from '../../../services/RegisterUserService';
 import AuthenticateUserService from '../../../services/AuthenticateUserService';
 import ValidateTokenService from '../../../services/ValidateTokenService';

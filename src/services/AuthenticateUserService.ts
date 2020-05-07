@@ -2,7 +2,7 @@ import { compare } from 'bcryptjs';
 import { injectable, inject } from 'tsyringe';
 
 import { Repository } from 'typeorm';
-import Users from '../database/models/Users';
+import User from '../database/models/User';
 import AppError from '../errors/AppError';
 import { SecurityProvider } from './container';
 
@@ -12,7 +12,7 @@ interface UserProps {
 }
 
 interface Returnable {
-    user: Users;
+    user: User;
     token: string;
 }
 
@@ -24,7 +24,7 @@ interface Returnable {
 @injectable()
 class AuthenticateUserService {
     constructor(
-        @inject('UsersRepository') private userRepo: Repository<Users>,
+        @inject('UsersRepository') private userRepo: Repository<User>,
         @inject('SecurityService') private security: SecurityProvider,
     ) { }
 

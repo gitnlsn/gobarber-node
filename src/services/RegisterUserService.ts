@@ -7,7 +7,7 @@ import validator from 'validator';
 import { Repository } from 'typeorm';
 import AppError from '../errors/AppError';
 
-import Users from '../database/models/Users';
+import User from '../database/models/User';
 import { SecurityProvider } from './container';
 
 interface UserProps {
@@ -17,7 +17,7 @@ interface UserProps {
 }
 
 interface Returnable {
-    user: Users;
+    user: User;
     token: string;
 }
 
@@ -41,11 +41,12 @@ export const validFullName: (fullname: string) => boolean = (fullname) => {
 @injectable()
 class RegisterUserService {
     constructor(
-        @inject('UsersRepository') private userRepo: Repository<Users>,
+        @inject('UsersRepository') private userRepo: Repository<User>,
         @inject('SecurityService') private security: SecurityProvider,
     ) { }
 
     public async execute(userProps: UserProps): Promise<Returnable> {
+        /* Data Validation */
         if (!validator.isEmail(userProps.email)) {
             throw new AppError('Invalid email');
         }
@@ -58,6 +59,7 @@ class RegisterUserService {
             throw new AppError('Invalid password');
         }
 
+        /* Data access: check */
         const existingUser = await this.userRepo.findOne({
             email: userProps.email,
         });
@@ -66,6 +68,7 @@ class RegisterUserService {
             throw new AppError('A user with the specified email already exists');
         }
 
+        /* Data access: create */
         const newUser = this.userRepo.create();
         if (userProps.name) newUser.name = userProps.name;
         newUser.email = userProps.email;
@@ -78,12 +81,12 @@ class RegisterUserService {
             .returning('*')
             .execute();
 
-        /* Avoids returning password to user */
+        /* Pos processing */
         delete createdUser.password;
 
         const token = this.security.signJwt(createdUser.id);
 
-        return { user: createdUser as Users, token };
+        return { user: createdUser as User, token };
     }
 }
 

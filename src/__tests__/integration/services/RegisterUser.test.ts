@@ -12,7 +12,7 @@ import { createHash } from 'crypto';
 import registerRepositories from '../../../database/container';
 import registerServices from '../../../services/container';
 
-import Users from '../../../database/models/Users';
+import User from '../../../database/models/User';
 import RegisterUserService from '../../../services/RegisterUserService';
 import SecurityService from '../../../services/SecurityService';
 
@@ -68,7 +68,7 @@ describe('Register User', () => {
     });
 
     it('Should insert user in repository', async () => {
-        const userRepo = getRepository(Users);
+        const userRepo = getRepository(User);
         const service = container.resolve(RegisterUserService);
 
         await service.execute({
@@ -79,7 +79,7 @@ describe('Register User', () => {
 
         const registeredUser = await userRepo.findOne({
             email: validEmail,
-        }) as Users;
+        }) as User;
 
         expect(isUuid(registeredUser.id)).toBeTruthy();
         expect(registeredUser.name).toBe(validUserName);

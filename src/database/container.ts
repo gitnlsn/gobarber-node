@@ -1,12 +1,24 @@
 import { container } from 'tsyringe';
 import { Repository, getRepository } from 'typeorm';
-import Users from './models/Users';
+
+import User from './models/User';
+import Barbershop from './models/Barbershop';
+import Appointment from './models/Appointment';
 
 const registerRepositories: () => void = () => {
-    /* User Repository into container */
-    container.register<Repository<Users>>(
+    container.register<Repository<User>>(
         'UsersRepository',
-        { useValue: getRepository(Users) },
+        { useValue: getRepository(User) },
+    );
+
+    container.register<Repository<Barbershop>>(
+        'BarbershopsRepository',
+        { useValue: getRepository(Barbershop) },
+    );
+
+    container.register<Repository<Appointment>>(
+        'AppointmentsRepository',
+        { useValue: getRepository(Appointment) },
     );
 };
 

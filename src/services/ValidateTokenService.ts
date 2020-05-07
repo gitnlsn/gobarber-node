@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 
 import { inject, injectable } from 'tsyringe';
 
-import Users from '../database/models/Users';
+import User from '../database/models/User';
 import AppError from '../errors/AppError';
 import { SecurityProvider } from './container';
 
@@ -17,7 +17,7 @@ export interface TokenPayload {
 }
 
 interface Returnable {
-    user: Users;
+    user: User;
     token: string;
 }
 
@@ -28,7 +28,7 @@ interface Returnable {
 @injectable()
 class ValidateTokenService {
     constructor(
-        @inject('UsersRepository') private userRepo: Repository<Users>,
+        @inject('UsersRepository') private userRepo: Repository<User>,
         @inject('SecurityService') private security: SecurityProvider,
     ) { }
 
