@@ -1,15 +1,15 @@
 import {
     MigrationInterface,
     QueryRunner,
-    TableForeignKey,
     Table,
+    TableForeignKey,
 } from 'typeorm';
 
-class CreatePost1588796657146 implements MigrationInterface {
+class CreateAppointment1588871172041 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'appointment_messages',
+                name: 'appointments',
                 columns: [
                     {
                         name: 'id',
@@ -18,21 +18,37 @@ class CreatePost1588796657146 implements MigrationInterface {
                         default: 'uuid_generate_v4()',
                     },
                     {
-                        /* points to users: user writes the message */
-                        name: 'user_id',
-                        type: 'uuid',
-                    },
-                    {
-                        /* points to appointment: users will discuss the appointment */
-                        name: 'appointment_id',
-                        type: 'uuid',
-                    },
-                    {
-                        /* Describe the business */
-                        name: 'text',
+                        /* A description to the appointment */
+                        name: 'title',
                         type: 'varchar',
                     },
-
+                    {
+                        /* points to users: client chooses an appointment */
+                        name: 'user_id',
+                        type: 'uuid',
+                        isNullable: true,
+                    },
+                    {
+                        /* points to shop: barbershop announces an available appointment */
+                        name: 'service_id',
+                        type: 'uuid',
+                    },
+                    {
+                        /* Starting timestamp */
+                        name: 'starts_at',
+                        type: 'timestamp with time zone',
+                    },
+                    {
+                        /* Ending timestamp */
+                        name: 'ends_at',
+                        type: 'timestamp with time zone',
+                    },
+                    {
+                        /* details the appoint has */
+                        name: 'observations',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
                     /* timestamp logs */
                     { name: 'created_at', type: 'timestamp with time zone', default: 'CURRENT_TIMESTAMP' },
                     { name: 'updated_at', type: 'timestamp with time zone', default: 'CURRENT_TIMESTAMP' },
@@ -44,9 +60,9 @@ class CreatePost1588796657146 implements MigrationInterface {
             Relates barbershops to users by foreignKey
         */
         await queryRunner.createForeignKey(
-            'appointment_messages',
+            'appointments',
             new TableForeignKey({
-                name: 'message_user',
+                name: 'FK_appointment_client',
                 columnNames: ['user_id'],
                 referencedTableName: 'users',
                 referencedColumnNames: ['id'],
@@ -55,11 +71,11 @@ class CreatePost1588796657146 implements MigrationInterface {
         );
 
         await queryRunner.createForeignKey(
-            'appointment_messages',
+            'appointments',
             new TableForeignKey({
-                name: 'message_appointment',
-                columnNames: ['appointment_id'],
-                referencedTableName: 'appointments',
+                name: 'FK_appointment_service',
+                columnNames: ['service_id'],
+                referencedTableName: 'barbershop_services',
                 referencedColumnNames: ['id'],
                 onDelete: 'CASCADE',
             }),
@@ -67,8 +83,8 @@ class CreatePost1588796657146 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('babershops');
+        await queryRunner.dropTable('appointments');
     }
 }
 
-export default CreatePost1588796657146;
+export default CreateAppointment1588871172041;

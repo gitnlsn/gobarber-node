@@ -54,7 +54,7 @@ class CreateBarberShop1588796629208 implements MigrationInterface {
         await queryRunner.createForeignKey(
             'barbershops',
             new TableForeignKey({
-                name: 'barbershops_user',
+                name: 'FK_barbershops_user',
                 columnNames: ['user_id'],
                 referencedTableName: 'users',
                 referencedColumnNames: ['id'],
@@ -64,7 +64,7 @@ class CreateBarberShop1588796629208 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('babershops');
+        await queryRunner.dropTable('barbershops');
     }
 }
 

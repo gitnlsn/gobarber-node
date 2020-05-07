@@ -9,7 +9,7 @@ import {
     OneToMany,
 } from 'typeorm';
 import User from './User';
-import Appointment from './Appointment';
+import BarbershopService from './BarbershopService';
 
 @Entity('barbershops')
 class Barbershop {
@@ -21,8 +21,8 @@ class Barbershop {
     @JoinColumn({ name: 'user_id' })
     owner: User;
 
-    @OneToMany(() => Appointment, (appointment) => appointment.shop)
-    appointments: Appointment[]
+    @OneToMany(() => BarbershopService, (service) => service.provider)
+    services: BarbershopService[];
 
     @Column('varchar')
     name: string;

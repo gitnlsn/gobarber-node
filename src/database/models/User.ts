@@ -25,10 +25,10 @@ class User {
 
     /* client may have many appointments */
     @OneToMany(() => Appointment, (appointment) => appointment.client)
-    appointments: Appointment[]
+    appointments: Appointment[];
 
-    @OneToMany(() => AppointmentMessage, (message) => message.client)
-    appointmentMessages: AppointmentMessage[]
+    @OneToMany(() => AppointmentMessage, (message) => message.author)
+    appointmentMessages: AppointmentMessage[];
 
     @Column('varchar')
     email: string;

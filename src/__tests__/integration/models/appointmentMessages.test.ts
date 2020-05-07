@@ -3,12 +3,16 @@ import User from '../../../database/models/User';
 import Barbershop from '../../../database/models/Barbershop';
 import Appointment from '../../../database/models/Appointment';
 import AppointmentMessage from '../../../database/models/AppointmentMessage';
+import ServiceType from '../../../database/models/ServiceType';
+import BarbershopService from '../../../database/models/BarbershopService';
 
 describe('Barbershop data access', () => {
     let connection: Connection;
     let usersRepository: Repository<User>;
     let shopsRepository: Repository<Barbershop>;
     let appointmentsRepository: Repository<Appointment>;
+    let serviceTypeRepository: Repository<ServiceType>;
+    let barbershopServiceRepository: Repository<BarbershopService>;
     let messageRepository: Repository<AppointmentMessage>;
 
     beforeAll(async () => {
@@ -16,6 +20,8 @@ describe('Barbershop data access', () => {
         await connection.runMigrations();
         usersRepository = connection.getRepository(User);
         shopsRepository = connection.getRepository(Barbershop);
+        serviceTypeRepository = connection.getRepository(ServiceType);
+        barbershopServiceRepository = connection.getRepository(BarbershopService);
         appointmentsRepository = connection.getRepository(Appointment);
         messageRepository = connection.getRepository(AppointmentMessage);
     });
@@ -23,6 +29,8 @@ describe('Barbershop data access', () => {
     afterEach(async () => {
         await connection.query('delete from appointment_messages');
         await connection.query('delete from appointments');
+        await connection.query('delete from barbershop_services');
+        await connection.query('delete from service_types');
         await connection.query('delete from barbershops');
         await connection.query('delete from users');
     });
@@ -57,9 +65,24 @@ describe('Barbershop data access', () => {
             client.password = 'hash of an incredibly strong password';
             await usersRepository.save(client);
 
+            const serviceType = serviceTypeRepository.create();
+            serviceType.title = 'Haircut';
+            serviceType.description = 'Simple Haircut';
+            serviceType.logoUrl = 'standard logo';
+            await serviceTypeRepository.save(serviceType);
+
+            const service = barbershopServiceRepository.create();
+            service.type = serviceType;
+            service.provider = barbershop;
+            service.description = 'Simple Haircut';
+            service.logoUrl = 'custom logo to haircut';
+            service.price = 5000; /* R$50,00 */
+            service.status = 'enabled';
+            await barbershopServiceRepository.save(service);
+
             const firstAppointment = appointmentsRepository.create();
             firstAppointment.title = 'First haircut';
-            firstAppointment.shop = barbershop;
+            firstAppointment.service = service;
             firstAppointment.client = client;
             firstAppointment.observations = 'My hair like crazy';
             firstAppointment.startsAt = new Date('2020-05-24 15:00');
@@ -106,9 +129,24 @@ describe('Barbershop data access', () => {
             client.password = 'hash of an incredibly strong password';
             await usersRepository.save(client);
 
+            const serviceType = serviceTypeRepository.create();
+            serviceType.title = 'Haircut';
+            serviceType.description = 'Simple Haircut';
+            serviceType.logoUrl = 'standard logo';
+            await serviceTypeRepository.save(serviceType);
+
+            const service = barbershopServiceRepository.create();
+            service.type = serviceType;
+            service.provider = barbershop;
+            service.description = 'Simple Haircut';
+            service.logoUrl = 'custom logo to haircut';
+            service.price = 5000; /* R$50,00 */
+            service.status = 'enabled';
+            await barbershopServiceRepository.save(service);
+
             const firstAppointment = appointmentsRepository.create();
             firstAppointment.title = 'First haircut';
-            firstAppointment.shop = barbershop;
+            firstAppointment.service = service;
             firstAppointment.client = client;
             firstAppointment.observations = 'My hair like crazy';
             firstAppointment.startsAt = new Date('2020-05-24 15:00');

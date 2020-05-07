@@ -1,15 +1,15 @@
 import {
     MigrationInterface,
     QueryRunner,
-    Table,
     TableForeignKey,
+    Table,
 } from 'typeorm';
 
-class CreateAppointments1588796640913 implements MigrationInterface {
+class CreateAppointmentMessage1588871204585 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'appointments',
+                name: 'appointment_messages',
                 columns: [
                     {
                         name: 'id',
@@ -18,37 +18,21 @@ class CreateAppointments1588796640913 implements MigrationInterface {
                         default: 'uuid_generate_v4()',
                     },
                     {
-                        /* A description to the appointment */
-                        name: 'title',
-                        type: 'varchar',
-                    },
-                    {
-                        /* points to users: client chooses an appointment */
+                        /* points to users: user writes the message */
                         name: 'user_id',
                         type: 'uuid',
-                        isNullable: true,
                     },
                     {
-                        /* points to shop: barbershop announces an available appointment */
-                        name: 'shop_id',
+                        /* points to appointment: users will discuss the appointment */
+                        name: 'appointment_id',
                         type: 'uuid',
                     },
                     {
-                        /* Starting timestamp */
-                        name: 'starts_at',
-                        type: 'timestamp with time zone',
-                    },
-                    {
-                        /* Ending timestamp */
-                        name: 'ends_at',
-                        type: 'timestamp with time zone',
-                    },
-                    {
-                        /* details the appoint has */
-                        name: 'observations',
+                        /* Describe the business */
+                        name: 'text',
                         type: 'varchar',
-                        isNullable: true,
                     },
+
                     /* timestamp logs */
                     { name: 'created_at', type: 'timestamp with time zone', default: 'CURRENT_TIMESTAMP' },
                     { name: 'updated_at', type: 'timestamp with time zone', default: 'CURRENT_TIMESTAMP' },
@@ -60,9 +44,9 @@ class CreateAppointments1588796640913 implements MigrationInterface {
             Relates barbershops to users by foreignKey
         */
         await queryRunner.createForeignKey(
-            'appointments',
+            'appointment_messages',
             new TableForeignKey({
-                name: 'appointment_client',
+                name: 'FK_message_user',
                 columnNames: ['user_id'],
                 referencedTableName: 'users',
                 referencedColumnNames: ['id'],
@@ -71,11 +55,11 @@ class CreateAppointments1588796640913 implements MigrationInterface {
         );
 
         await queryRunner.createForeignKey(
-            'appointments',
+            'appointment_messages',
             new TableForeignKey({
-                name: 'appointment_shop',
-                columnNames: ['shop_id'],
-                referencedTableName: 'barbershops',
+                name: 'FK_message_appointment',
+                columnNames: ['appointment_id'],
+                referencedTableName: 'appointments',
                 referencedColumnNames: ['id'],
                 onDelete: 'CASCADE',
             }),
@@ -83,8 +67,8 @@ class CreateAppointments1588796640913 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('appointments');
+        await queryRunner.dropTable('appointment_messages');
     }
 }
 
-export default CreateAppointments1588796640913;
+export default CreateAppointmentMessage1588871204585;

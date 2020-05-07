@@ -9,8 +9,8 @@ import {
     OneToMany,
 } from 'typeorm';
 import User from './User';
-import Barbershop from './Barbershop';
 import AppointmentMessage from './AppointmentMessage';
+import BarbershopService from './BarbershopService';
 
 @Entity('appointments')
 class Appointment {
@@ -26,9 +26,9 @@ class Appointment {
     client: User;
 
     /* client may have many appointments */
-    @ManyToOne(() => Barbershop, (shop) => shop.appointments)
-    @JoinColumn({ name: 'shop_id' })
-    shop: Barbershop;
+    @ManyToOne(() => BarbershopService, (service) => service.appointments)
+    @JoinColumn({ name: 'service_id' })
+    service: BarbershopService;
 
     /* client may have many appointments */
     @OneToMany(() => AppointmentMessage, (message) => message.appointment)

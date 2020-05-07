@@ -5,7 +5,7 @@ module.exports = {
     collectCoverage: true,
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',
-        '!<rootDir>/src/database/migrations/*.ts',
+        '!<rootDir>/src/database/migrations/**',
         '!<rootDir>/src/**/index.ts',
     ],
     coverageReporters: [
