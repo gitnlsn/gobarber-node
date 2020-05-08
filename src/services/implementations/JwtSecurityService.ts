@@ -1,9 +1,10 @@
+import 'reflect-metadata';
+
 import { sign, SignOptions, verify } from 'jsonwebtoken';
 import { inject, singleton } from 'tsyringe';
 
 import { randomBytes } from 'crypto';
-import { SecurityProvider } from './container';
-import { TokenPayload } from './ValidateTokenService';
+import { JwtSignInterface, TokenPayload } from '../interfaces/JwtSignInterface';
 
 export const newBytesWord: (
     size: number
@@ -11,9 +12,8 @@ export const newBytesWord: (
     size,
 ) => randomBytes(size).toString('base64');
 
-
 @singleton()
-class SecurityService implements SecurityProvider {
+class JwtSecurityService implements JwtSignInterface {
     constructor(@inject('jwtSignKey') private jwtSignKey: string) {}
 
     public signJwt(
@@ -36,4 +36,4 @@ class SecurityService implements SecurityProvider {
     }
 }
 
-export default SecurityService;
+export default JwtSecurityService;

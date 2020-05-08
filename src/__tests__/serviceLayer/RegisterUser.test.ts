@@ -10,11 +10,11 @@ import {
 import { createHash } from 'crypto';
 
 import registerRepositories from '../../database/container';
-import registerServices from '../../services/container';
+import registerServices from '../../services/implementations/container';
 
 import User from '../../database/models/User';
-import RegisterUserService from '../../services/RegisterUserService';
-import SecurityService from '../../services/SecurityService';
+import RegisterUserService from '../../services/implementations/RegisterUserService';
+import JwtSecurityService from '../../services/implementations/JwtSecurityService';
 
 describe('Register User', () => {
     let connection: Connection;
@@ -52,7 +52,7 @@ describe('Register User', () => {
     });
 
     it('Should return token', async () => {
-        const securityService = container.resolve(SecurityService);
+        const securityService = container.resolve(JwtSecurityService);
         const registerService = container.resolve(RegisterUserService);
 
         const { token } = await registerService.execute({

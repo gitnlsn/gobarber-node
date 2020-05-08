@@ -5,21 +5,11 @@ import { injectable, inject } from 'tsyringe';
 import validator from 'validator';
 
 import { Repository } from 'typeorm';
-import AppError from '../errors/AppError';
+import AppError from '../../errors/AppError';
 
-import User from '../database/models/User';
-import { SecurityProvider } from './container';
-
-interface UserProps {
-    name?: string;
-    email: string;
-    password: string;
-}
-
-interface Returnable {
-    user: User;
-    token: string;
-}
+import User from '../../database/models/User';
+import { RegiterUserInterface, RegisterUserInput, RegisterUserOutput } from '../interfaces/RegisterUserInterface';
+import { JwtSignInterface } from '../interfaces/JwtSignInterface';
 
 export const validFullName: (fullname: string) => boolean = (fullname) => {
     if (!fullname) {
@@ -39,13 +29,13 @@ export const validFullName: (fullname: string) => boolean = (fullname) => {
  *  Returns created User from database, otherwise throws Error.
  */
 @injectable()
-class RegisterUserService {
+class RegisterUserService implements RegiterUserInterface {
     constructor(
         @inject('UsersRepository') private userRepo: Repository<User>,
-        @inject('SecurityService') private security: SecurityProvider,
+        @inject('JwtSecurityService') private security: JwtSignInterface,
     ) { }
 
-    public async execute(userProps: UserProps): Promise<Returnable> {
+    public async execute(userProps: RegisterUserInput): Promise<RegisterUserOutput> {
         /* Data Validation */
         if (!validator.isEmail(userProps.email)) {
             throw new AppError('Invalid email');
@@ -82,11 +72,12 @@ class RegisterUserService {
             .execute();
 
         /* Pos processing */
-        delete createdUser.password;
+        const clonedUser = { ...createdUser };
+        delete clonedUser.password;
 
         const token = this.security.signJwt(createdUser.id);
 
-        return { user: createdUser as User, token };
+        return { user: clonedUser as User, token };
     }
 }
 

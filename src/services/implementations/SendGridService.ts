@@ -3,21 +3,17 @@ import 'reflect-metadata';
 import sendgrid from '@sendgrid/mail';
 import nodemailer from 'nodemailer';
 import { singleton } from 'tsyringe';
-
-export interface MailData {
-    subject: string;
-    message: string;
-    to: string;
-    from: string;
-}
-
-export interface SendMailResult {
-    status: 'ok' | 'failed';
-    data: object;
-}
+import EmailServiceInterface, { MailData, SendMailResult } from '../interfaces/EmaiServicelInterface';
 
 @singleton()
-class EmailService {
+class SendGridService implements EmailServiceInterface {
+    private sendGridKey: string;
+
+    public withKey(sendGridKey: string): SendGridService {
+        this.sendGridKey = sendGridKey;
+        return this;
+    }
+
     /**
      * Uses Ethereal to test mail
      */
@@ -82,7 +78,7 @@ class EmailService {
     }
 
     async sendMail(data: MailData): Promise<SendMailResult> {
-        const sendGridConfigured = !!process.env.SENDGRID_API_KEY;
+        const sendGridConfigured = !!this.sendGridKey;
 
         if (sendGridConfigured) {
             return this.sendGridMail(data);
@@ -96,4 +92,4 @@ class EmailService {
     }
 }
 
-export default EmailService;
+export default SendGridService;

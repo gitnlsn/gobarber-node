@@ -1,15 +1,8 @@
-import 'reflect-metadata';
-
-import { container } from 'tsyringe';
-import SecurityService from './SecurityService';
-import registerServices from './container';
+import JwtSecurityService from '../implementations/JwtSecurityService';
 
 describe('Security Service', () => {
-    beforeAll(() => {
-        registerServices();
-    });
     it('Should sign and decode', () => {
-        const securityService = container.resolve(SecurityService);
+        const securityService = new JwtSecurityService('key');
 
         const token = securityService.signJwt('some id');
         const decodedToken = securityService.decodeJwt(token);

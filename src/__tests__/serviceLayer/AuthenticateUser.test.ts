@@ -8,11 +8,11 @@ import {
 import { createHash } from 'crypto';
 
 import registerRepositories from '../../database/container';
-import registerServices from '../../services/container';
+import registerServices from '../../services/implementations/container';
 
-import RegisterUserService from '../../services/RegisterUserService';
-import AuthenticateUserService from '../../services/AuthenticateUserService';
-import SecurityService from '../../services/SecurityService';
+import RegisterUserService from '../../services/implementations/RegisterUserService';
+import AuthenticateUserService from '../../services/implementations/AuthenticateUserService';
+import JwtSecurityService from '../../services/implementations/JwtSecurityService';
 
 describe('Authenticate User', () => {
     let connection: Connection;
@@ -52,13 +52,12 @@ describe('Authenticate User', () => {
 
         expect(user.name).toBe(userName);
         expect(user.email).toBe(userEmail);
-        expect(user.password).toBe(undefined);
     });
 
     it('Should return token', async () => {
         const registerService = container.resolve(RegisterUserService);
         const authService = container.resolve(AuthenticateUserService);
-        const securityService = container.resolve(SecurityService);
+        const securityService = container.resolve(JwtSecurityService);
 
         await registerService.execute({
             email: userEmail,

@@ -3,10 +3,14 @@ module.exports = {
     testEnvironment: 'node',
 
     verbose: true,
-    maxConcurrency: 1, /* integrated tests will touch the database */
+
+    testPathIgnorePatterns: [
+        '<rootDir>/src/__tests__', /* integration tests */
+    ],
+
     collectCoverage: true,
 
-    coverageDirectory: 'jestCoverage/overall/',
+    coverageDirectory: 'jestCoverage/unit/',
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',
         '!<rootDir>/src/database/**', /* ignore database */

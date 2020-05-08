@@ -7,13 +7,13 @@ import { createHash } from 'crypto';
 import { container } from 'tsyringe';
 
 import registerRepositories from '../../database/container';
-import registerServices from '../../services/container';
+import registerServices from '../../services/implementations/container';
 
 import Users from '../../database/models/User';
-import RegisterUserService from '../../services/RegisterUserService';
-import AuthenticateUserService from '../../services/AuthenticateUserService';
-import ValidateTokenService from '../../services/ValidateTokenService';
-import SecurityService from '../../services/SecurityService';
+import RegisterUserService from '../../services/implementations/RegisterUserService';
+import AuthenticateUserService from '../../services/implementations/AuthenticateUserService';
+import ValidateTokenService from '../../services/implementations/ValidateTokenService';
+import JwtSecurityService from '../../services/implementations/JwtSecurityService';
 
 describe('Validate Token', () => {
     let connection: Connection;
@@ -36,7 +36,7 @@ describe('Validate Token', () => {
     });
 
     it('Should return user if succeed', async () => {
-        const securityService = container.resolve(SecurityService);
+        const securityService = container.resolve(JwtSecurityService);
         const registerService = container.resolve(RegisterUserService);
         const authService = container.resolve(AuthenticateUserService);
         const validateService = container.resolve(ValidateTokenService);
