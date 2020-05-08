@@ -1,4 +1,4 @@
-import EmailService from '../../../services/EmailService';
+import EmailService from '../../services/EmailService';
 
 jest.setTimeout(10000);
 describe('Email Service', () => {

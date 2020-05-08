@@ -9,12 +9,12 @@ import {
 } from 'typeorm';
 import { createHash } from 'crypto';
 
-import registerRepositories from '../../../database/container';
-import registerServices from '../../../services/container';
+import registerRepositories from '../../database/container';
+import registerServices from '../../services/container';
 
-import User from '../../../database/models/User';
-import RegisterUserService from '../../../services/RegisterUserService';
-import SecurityService from '../../../services/SecurityService';
+import User from '../../database/models/User';
+import RegisterUserService from '../../services/RegisterUserService';
+import SecurityService from '../../services/SecurityService';
 
 describe('Register User', () => {
     let connection: Connection;

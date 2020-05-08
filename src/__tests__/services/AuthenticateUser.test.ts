@@ -7,12 +7,12 @@ import {
 } from 'typeorm';
 import { createHash } from 'crypto';
 
-import registerRepositories from '../../../database/container';
-import registerServices from '../../../services/container';
+import registerRepositories from '../../database/container';
+import registerServices from '../../services/container';
 
-import RegisterUserService from '../../../services/RegisterUserService';
-import AuthenticateUserService from '../../../services/AuthenticateUserService';
-import SecurityService from '../../../services/SecurityService';
+import RegisterUserService from '../../services/RegisterUserService';
+import AuthenticateUserService from '../../services/AuthenticateUserService';
+import SecurityService from '../../services/SecurityService';
 
 describe('Authenticate User', () => {
     let connection: Connection;

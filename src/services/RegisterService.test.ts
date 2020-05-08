@@ -1,4 +1,4 @@
-import { validFullName } from '../../../services/RegisterUserService';
+import { validFullName } from './RegisterUserService';
 
 describe('Register Service', () => {
     test('validator to full name', () => {

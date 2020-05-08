@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
 import { container } from 'tsyringe';
-import SecurityService from '../../../services/SecurityService';
-import registerServices from '../../../services/container';
+import SecurityService from './SecurityService';
+import registerServices from './container';
 
 describe('Security Service', () => {
     beforeAll(() => {

@@ -1,5 +1,5 @@
 import { Repository, createConnection, Connection } from 'typeorm';
-import User from '../../../database/models/User';
+import User from '../../database/models/User';
 
 describe('User data access', () => {
     let connection: Connection;

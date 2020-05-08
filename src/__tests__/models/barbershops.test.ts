@@ -1,6 +1,6 @@
 import { Repository, createConnection, Connection } from 'typeorm';
-import User from '../../../database/models/User';
-import Barbershop from '../../../database/models/Barbershop';
+import User from '../../database/models/User';
+import Barbershop from '../../database/models/Barbershop';
 
 describe('Barbershop data access', () => {
     let connection: Connection;
