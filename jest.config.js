@@ -2,7 +2,6 @@ module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
 
-    verbose: true,
     maxConcurrency: 1, /* integrated tests will touch the database */
     collectCoverage: true,
 

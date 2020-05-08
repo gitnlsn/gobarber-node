@@ -4,7 +4,7 @@
   "description": "template to build node projects",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test:unit && npm run test:integration",
+    "test": "jest --runInBand --config jest.config.js",
     "build": "tsc",
     "start": "node dist/server.js",
     "test:unit": "jest --config jestunit.config.js --verbose",
