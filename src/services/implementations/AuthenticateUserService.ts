@@ -4,12 +4,12 @@ import { injectable, inject } from 'tsyringe';
 import { Repository } from 'typeorm';
 import User from '../../database/models/User';
 import AppError from '../../errors/AppError';
-import JwtSecurityService from './JwtSecurityService';
 import {
     AuthenticateUserInterface,
     AuthenticateOutput,
     AuthenticateInput,
 } from '../interfaces/AuthenticateUserInterface';
+import { JwtSignInterface, TokenPayload } from '../interfaces/JwtSignInterface';
 
 
 /**
@@ -21,7 +21,7 @@ import {
 class AuthenticateUserService implements AuthenticateUserInterface {
     constructor(
         @inject('UsersRepository') private userRepo: Repository<User>,
-        @inject('JwtSecurityService') private security: JwtSecurityService,
+        @inject('JwtSecurityService') private security: JwtSignInterface,
     ) { }
 
     public async execute(userProps: AuthenticateInput): Promise<AuthenticateOutput> {
@@ -46,7 +46,11 @@ class AuthenticateUserService implements AuthenticateUserInterface {
         const clonedUser = { ...existingUser };
         delete clonedUser.password;
 
-        const token = this.security.signJwt(existingUser.id);
+        const token = this.security.signJwt(
+            existingUser.id,
+            undefined,
+            { usage: 'client' as TokenPayload['usage'] },
+        );
 
         return { user: clonedUser, token };
     }

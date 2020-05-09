@@ -28,21 +28,26 @@ class ValidateTokenService implements TokenValidatorInterface {
         try {
             decoded = this.security.decodeJwt(token) as TokenPayload;
         } catch (error) {
-            throw new AppError('Invalid crendentials');
+            throw new AppError('Invalid token');
         }
 
         const {
             sub: userId,
             exp: expiresIn,
             iat: issuedAt,
+            usage,
         } = decoded;
+
+        if (usage !== 'client') {
+            throw new AppError('Invalid token');
+        }
 
         const existingUser = await this.userRepo.findOne({
             id: userId,
         });
 
         if (!existingUser || this.invalidDate(issuedAt, expiresIn)) {
-            throw new AppError('Invalid crendentials');
+            throw new AppError('Invalid token');
         }
 
         const clonedUser = { ...existingUser };

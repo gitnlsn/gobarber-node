@@ -9,7 +9,7 @@ import AppError from '../../errors/AppError';
 
 import User from '../../database/models/User';
 import { RegiterUserInterface, RegisterUserInput, RegisterUserOutput } from '../interfaces/RegisterUserInterface';
-import { JwtSignInterface } from '../interfaces/JwtSignInterface';
+import { JwtSignInterface, TokenPayload } from '../interfaces/JwtSignInterface';
 
 export const validFullName: (fullname: string) => boolean = (fullname) => {
     if (!fullname) {
@@ -63,19 +63,17 @@ class RegisterUserService implements RegiterUserInterface {
         if (userProps.name) newUser.name = userProps.name;
         newUser.email = userProps.email;
         newUser.password = hashSync(userProps.password);
-
-        const { generatedMaps: [createdUser] } = await this.userRepo
-            .createQueryBuilder()
-            .insert()
-            .values(newUser)
-            .returning('*')
-            .execute();
+        const createdUser = await this.userRepo.save(newUser);
 
         /* Pos processing */
         const clonedUser = { ...createdUser };
         delete clonedUser.password;
 
-        const token = this.security.signJwt(createdUser.id);
+        const token = this.security.signJwt(
+            createdUser.id,
+            undefined,
+            { usage: 'client' as TokenPayload['usage'] },
+        );
 
         return { user: clonedUser as User, token };
     }

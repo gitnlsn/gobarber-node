@@ -1,6 +1,5 @@
 import { Repository } from 'typeorm';
 import { createHash } from 'crypto';
-import { hashSync } from 'bcryptjs';
 import User from '../../database/models/User';
 import JwtSecurityService from '../implementations/JwtSecurityService';
 import ResetPasswordService from '../implementations/ResetPasswordService';
