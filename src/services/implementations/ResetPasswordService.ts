@@ -42,7 +42,7 @@ class ResetPasswordService implements ResetPasswordInterface {
         const user = await this.userRepository.findOne({ id: userId });
 
         if (!user) {
-            throw new AppError('No user related to the specified email');
+            throw new AppError('No user related to the provided token');
         }
 
         if (!validator.isHash(newPassword, 'sha256')) {

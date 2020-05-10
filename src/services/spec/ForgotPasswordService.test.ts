@@ -35,7 +35,7 @@ describe('ForgotPasswordService', () => {
             userRepository,
             signService,
         );
-        mockedFindOne.mockRejectedValueOnce(new AppError('invalid email'));
+        mockedFindOne.mockResolvedValueOnce(undefined);
 
         await expect(
             service.execute({ email: 'johndoe@mail.com' }),

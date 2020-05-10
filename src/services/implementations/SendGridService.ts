@@ -25,15 +25,7 @@ class SendGridService implements EmailServiceInterface {
         to,
         from,
     }: MailData): Promise<SendMailResult> {
-        if (!this.apiKey) {
-            throw new AppError('Email is not configured properly. Missing api key');
-        }
-
         sendgrid.setApiKey(this.apiKey);
-
-        if (!subject || !message || !to || !from) {
-            throw new AppError('Missing email props');
-        }
 
         const response = await sendgrid.send({
             from,

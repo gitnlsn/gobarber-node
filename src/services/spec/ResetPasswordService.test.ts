@@ -10,8 +10,9 @@ describe('ForgotPasswordService', () => {
     let signService: JwtSignInterface;
     let userRepository: Repository<User>;
     let saveSpy: jest.SpyInstance;
+    let findOneSpy: jest.SpyInstance;
 
-    let newPassword: string;
+    let newValidPassword: string;
     let resetPasswordToken: string;
     let notResetPasswordToken: string;
 
@@ -19,7 +20,8 @@ describe('ForgotPasswordService', () => {
         signService = new JwtSecurityService('key');
 
         userRepository = new Repository<User>();
-        jest.spyOn(userRepository, 'findOne').mockImplementation(async (conditions) => {
+        findOneSpy = jest.spyOn(userRepository, 'findOne');
+        findOneSpy.mockImplementation(async (conditions) => {
             if (!conditions) {
                 return undefined;
             }
@@ -28,13 +30,16 @@ describe('ForgotPasswordService', () => {
             if (conditions.id) user.id = conditions.id as string;
             return user;
         });
-        saveSpy = jest.spyOn(userRepository, 'save').mockImplementation(async (conditions) => {
+
+        saveSpy = jest.spyOn(userRepository, 'save');
+        saveSpy.mockImplementation(async (conditions) => {
             const user = new User();
             const updatedUser = { ...user, ...conditions } as User;
             return updatedUser;
         });
 
-        newPassword = createHash('sha256').update('password').digest('hex');
+        newValidPassword = createHash('sha256').update('new password').digest('hex');
+
         resetPasswordToken = signService.signJwt(
             'user id',
             undefined,
@@ -57,7 +62,7 @@ describe('ForgotPasswordService', () => {
             signService,
         );
         const { token } = await service.execute({
-            newPassword: createHash('sha256').update('password').digest('hex'),
+            newPassword: newValidPassword,
             token: resetPasswordToken,
         });
         const { sub, usage } = signService.decodeJwt(token);
@@ -72,7 +77,7 @@ describe('ForgotPasswordService', () => {
         );
 
         await service.execute({
-            newPassword,
+            newPassword: newValidPassword,
             token: resetPasswordToken,
         });
 
@@ -90,8 +95,35 @@ describe('ForgotPasswordService', () => {
 
         await expect(
             service.execute({
-                newPassword: createHash('sha256').update('password').digest('hex'),
+                newPassword: newValidPassword,
+                token: 'invalid token',
+            }),
+        ).rejects.toThrow();
+    });
+    it('Should throw if token has no \'resetPassword\' usage', async () => {
+        const service = new ResetPasswordService(
+            userRepository,
+            signService,
+        );
+
+        await expect(
+            service.execute({
+                newPassword: newValidPassword,
                 token: notResetPasswordToken,
+            }),
+        ).rejects.toThrow();
+    });
+    it('Should throw if there is not user related to the token subject', async () => {
+        findOneSpy.mockResolvedValueOnce(undefined);
+        const service = new ResetPasswordService(
+            userRepository,
+            signService,
+        );
+
+        await expect(
+            service.execute({
+                newPassword: newValidPassword,
+                token: resetPasswordToken,
             }),
         ).rejects.toThrow();
     });
