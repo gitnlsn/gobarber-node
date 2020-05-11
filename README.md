@@ -71,6 +71,12 @@ Ou tendo o Docker instalado, inicie o container com imagem do Postgres e crie os
 > docker run -it --rm --network container:docker-postgres postgres psql -h localhost -U postgres -c 'create database gobarber_test;'
 ```
 
+Ou ainda, com o Docker instalado, execute o script.
+
+```bash
+> npm run docker:init
+```
+
 ## 2) Servidor de Applicação
 
 ```bash
