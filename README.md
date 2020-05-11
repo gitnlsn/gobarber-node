@@ -14,8 +14,9 @@
 
 Esse repositório implementa uma Restful API para prover full-Backend ao projeto GoBarber. É um *monoliton* on NodeJS, Express, Typeorm, Sendgrid, Tsyringe, ... *até então*.
 
-    O GoBarber é uma aplicação que agenda serviços de barbearia entre clientes e donos de barbearia. Donos de lojas anunciam serviços definindo seus horários disponíveis. Clientes escolhem serviços e horários.
-
+---
+| O GoBarber é uma aplicação que agenda serviços de barbearia entre clientes e donos de barbearia. Donos de lojas anunciam serviços definindo seus horários disponíveis. Clientes escolhem serviços e horários. |
+--
 O projeto está sendo implementado em arquitetura baseada em camadas:
 
    - Camada de acesso a dados
