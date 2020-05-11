@@ -4,6 +4,7 @@
 
 <img src="https://img.shields.io/badge/language-javascript-blue.svg" />
 
+<img src="https://img.shields.io/codecov/c/github/nelsonatgithub/gobarber-node/dev.svg" />
 
 </p>
 </html>
