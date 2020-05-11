@@ -78,6 +78,7 @@ class CreateBarberService1588859999789 implements MigrationInterface {
                         /* enum kind: disabled, enabled, deleted */
                         name: 'status',
                         type: 'varchar',
+                        default: '\'enabled\'',
                     },
                 ],
             }),

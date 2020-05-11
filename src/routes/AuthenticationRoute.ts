@@ -4,9 +4,9 @@ import {
 
 import { container } from 'tsyringe';
 
-import RegisterUserService from '../services/implementations/RegisterUserService';
-import AuthenticateUserService from '../services/implementations/AuthenticateUserService';
-import ValidateTokenService from '../services/implementations/ValidateTokenService';
+import RegisterUserService from '../services/user/implementations/RegisterUserService';
+import AuthenticateUserService from '../services/user/implementations/AuthenticateUserService';
+import ValidateTokenService from '../services/user/implementations/ValidateTokenService';
 
 const routes = Router();
 

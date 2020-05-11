@@ -19,7 +19,7 @@ class Barbershop {
     /* a user may register a barbershop */
     @OneToOne(() => User)
     @JoinColumn({ name: 'user_id' })
-    owner: User;
+    owner: Omit<User, 'password'>;
 
     @OneToMany(() => BarbershopService, (service) => service.provider)
     services: BarbershopService[];
@@ -35,6 +35,9 @@ class Barbershop {
 
     @Column('varchar')
     address: string;
+
+    @Column('varchar')
+    status: 'enabled' | 'disabled' | 'deleted';
 
     @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
     createdAt: Date;

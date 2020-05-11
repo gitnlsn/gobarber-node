@@ -6,7 +6,7 @@ import routes from './routes';
 import errorMidleware from './errors/AppErrorMiddleware';
 
 import registerRepositories from './database/container';
-import registerServices from './services/implementations/container';
+import registerServices from './services/container';
 
 const port = process.env.PORT || 3333;
 

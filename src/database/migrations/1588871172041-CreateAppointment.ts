@@ -44,6 +44,12 @@ class CreateAppointment1588871172041 implements MigrationInterface {
                         type: 'timestamp with time zone',
                     },
                     {
+                        /* enum kind: disabled, enabled, deleted */
+                        name: 'status',
+                        type: 'varchar',
+                        default: '\'enabled\'',
+                    },
+                    {
                         /* details the appoint has */
                         name: 'observations',
                         type: 'varchar',

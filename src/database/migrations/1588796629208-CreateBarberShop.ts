@@ -36,11 +36,18 @@ class CreateBarberShop1588796629208 implements MigrationInterface {
                         /* Describe the business */
                         name: 'description',
                         type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         /* location of the barbershop */
                         name: 'address',
                         type: 'varchar',
+                    },
+                    {
+                        /* location of the barbershop */
+                        name: 'status',
+                        type: 'varchar', /* enabled | disabled | deleted */
+                        default: '\'enabled\'',
                     },
                     { name: 'created_at', type: 'timestamp with time zone', default: 'CURRENT_TIMESTAMP' },
                     { name: 'updated_at', type: 'timestamp with time zone', default: 'CURRENT_TIMESTAMP' },

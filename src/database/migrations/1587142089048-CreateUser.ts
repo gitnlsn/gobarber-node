@@ -22,6 +22,12 @@ class CreateUser1587142089048 implements MigrationInterface {
                 {
                     name: 'email', type: 'varchar', isNullable: false, isUnique: true,
                 },
+                {
+                    /* location of the barbershop */
+                    name: 'status',
+                    type: 'varchar', /* enabled | disabled | deleted */
+                    default: '\'enabled\'',
+                },
                 { name: 'password', type: 'varchar', isNullable: false },
 
                 { name: 'created_at', type: 'timestamp with time zone', default: 'CURRENT_TIMESTAMP' },

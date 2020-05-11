@@ -36,6 +36,9 @@ class User {
     @Column('varchar')
     password: string;
 
+    @Column('varchar')
+    status: 'enabled' | 'disabled' | 'deleted';
+
     @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
     createdAt: Date;
 

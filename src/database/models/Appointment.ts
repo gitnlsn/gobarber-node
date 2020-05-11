@@ -43,6 +43,16 @@ class Appointment {
     @Column('varchar')
     observations: string;
 
+    /*
+        shop owner customizes accessibility
+            enabled: owner creates appointment availability
+            disabled: appointment is created, but owner wants to prevent its booking
+            deleted: owner cancels appointment availability
+        - implements persistense after deletion
+     */
+    @Column('varchar')
+    status: 'enabled' | 'disabled' | 'deleted';
+
     @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
     createdAt: Date;
 
