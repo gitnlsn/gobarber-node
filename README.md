@@ -37,7 +37,7 @@ O [Tsyringe](https://github.com/microsoft/tsyringe) é usado para prover as depe
         Vários serviços por barbearia (ex: cabelo, barba, manicure, etc.)
 
     2. Appointment by Service
-        Cliente agenda um serviço e pode alterar o serviço
+        Cliente agenda um serviço dentre os disponíveis pela loja
 
     3. Messages for Appointments
         Cliente e Barbeiros conversam sobre o agendamento
