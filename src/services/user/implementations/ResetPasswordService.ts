@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { inject } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import validator from 'validator';
 import { hashSync } from 'bcryptjs';
 import {
@@ -11,7 +11,7 @@ import User from '../../../database/models/User';
 import { JwtSignInterface, TokenPayload } from '../interfaces/JwtSignInterface';
 import AppError from '../../../errors/AppError';
 
-
+@injectable()
 class ResetPasswordService implements ResetPasswordInterface {
     constructor(
         @inject('UsersRepository') private userRepository: Repository<User>,

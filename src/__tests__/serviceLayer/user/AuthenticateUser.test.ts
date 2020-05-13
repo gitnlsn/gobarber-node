@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { createHash } from 'crypto';
 
-import registerRepositories from '../../../database/container';
+import registerRespositories from '../../../database/container';
 import registerServices from '../../../services/container';
 
 import RegisterUserService from '../../../services/user/implementations/RegisterUserService';
@@ -23,7 +23,7 @@ describe('Authenticate User', () => {
     beforeAll(async () => {
         connection = await createConnection();
         await connection.runMigrations();
-        registerRepositories();
+        registerRespositories({ typeormConnection: connection });
         registerServices();
     });
 
@@ -85,7 +85,7 @@ describe('Authenticate User', () => {
             password: userPassword,
         });
 
-        expect(
+        await expect(
             authService.execute({
                 email: 'invalid @ mail',
                 password: userPassword,
@@ -102,7 +102,7 @@ describe('Authenticate User', () => {
             password: userPassword,
         });
 
-        expect(
+        await expect(
             authService.execute({
                 email: userEmail,
                 password: 'invalid password',

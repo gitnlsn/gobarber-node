@@ -2,8 +2,7 @@ import { container } from 'tsyringe';
 import JwtSecurityService, { newBytesWord } from './user/implementations/JwtSecurityService';
 import { JwtSignInterface } from './user/interfaces/JwtSignInterface';
 
-
-const register: () => void = () => {
+function registerServices() {
     container.register<JwtSignInterface>(
         'JwtSecurityService',
         JwtSecurityService,
@@ -17,7 +16,7 @@ const register: () => void = () => {
         'jwtSignKey',
         { useValue: newBytesWord(512) },
     );
-};
+}
 
 
-export default register;
+export default registerServices;

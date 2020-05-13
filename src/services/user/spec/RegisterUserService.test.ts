@@ -14,6 +14,8 @@ describe('Register Service', () => {
         expect(validFullName('johndoe')).toBeTruthy();
         expect(validFullName('Johndoe')).toBeTruthy();
         expect(validFullName('JohnDoe')).toBeTruthy();
+
+        expect(validFullName('')).not.toBeTruthy();
     });
 
     describe('Service', () => {

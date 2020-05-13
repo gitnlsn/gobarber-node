@@ -1,4 +1,4 @@
-import { inject } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import BarberServicesRepository from '../../../database/repositories/BarberServiceRepository';
 import AppError from '../../../errors/AppError';
 
@@ -14,10 +14,11 @@ import {
     DisableBarberServiceOutput,
 } from '../interfaces/DisableBarberService';
 
+injectable();
 class BarberServiceVisibilityService
 implements EnableBarberServiceInterface, DisableBarberServiceInterface {
     constructor(
-        @inject(BarberServicesRepository) private shopRepo: BarberServicesRepository,
+        @inject('BarberServicesRepository') private shopRepo: BarberServicesRepository,
     ) { }
 
     async enable({ id }: EnableBarberServiceInput): Promise<EnableBarberServiceOutput> {

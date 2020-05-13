@@ -61,7 +61,7 @@ class BarbershopsRepository extends AbstractRepository<Barbershop> {
     ): Promise<Barbershop> {
         const existingBarbershop = await this.repository.findOne({
             where: {
-                owner: { id: barbershop.owner.id },
+                owner: barbershop.owner,
                 status: In(['enabled', 'disabled']),
             },
         });

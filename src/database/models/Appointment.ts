@@ -51,7 +51,7 @@ class Appointment {
         - implements persistense after deletion
      */
     @Column('varchar')
-    status: 'enabled' | 'disabled' | 'deleted';
+    status: 'enabled' | 'disabled' | 'deleted' | 'canceled';
 
     @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
     createdAt: Date;

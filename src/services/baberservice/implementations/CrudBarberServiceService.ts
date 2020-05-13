@@ -1,4 +1,5 @@
-import { inject, singleton } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
+import { FindConditions } from 'typeorm';
 import BarberServicesRepository from '../../../database/repositories/BarberServiceRepository';
 import {
     CrudBarberServiceInterface,
@@ -10,13 +11,16 @@ import {
     DeleteBarberServiceOutput,
     RetrieveBarberServiceInput,
     RetrieveBarberServiceOutput,
+    RetrieveAllBarberServiceInput,
+    RetrieveAllBarberServiceOutput,
 } from '../interfaces/CrudBarberService';
 import AppError from '../../../errors/AppError';
+import BarbershopService from '../../../database/models/BarbershopService';
 
-@singleton()
+@injectable()
 class CrudBarberServiceService implements CrudBarberServiceInterface {
     constructor(
-        @inject(BarberServicesRepository) private serviceRepo: BarberServicesRepository,
+        @inject('BarberServicesRepository') private serviceRepo: BarberServicesRepository,
     ) { }
 
     async create(createProps: CreateBarberServiceInput): Promise<CreateBarberServiceOutput> {
@@ -57,9 +61,28 @@ class CrudBarberServiceService implements CrudBarberServiceInterface {
         return { service: updatedService };
     }
 
-    async retrieve({ id }: RetrieveBarberServiceInput): Promise<RetrieveBarberServiceOutput> {
-        const existingService = await this.serviceRepo.findOne({ id });
+    async retrieve(conditions?: FindConditions<BarbershopService>): Promise<RetrieveBarberServiceOutput> {
+        const existingService = await this.serviceRepo.findOne(
+            conditions,
+            { relations: ['provider', 'type'] },
+        );
         return { service: existingService };
+    }
+
+    async retrieveAll({
+        provider,
+        type,
+    }: RetrieveAllBarberServiceInput): Promise<RetrieveAllBarberServiceOutput> {
+        const findOptions = {} as FindConditions<BarbershopService>;
+
+        if (provider) findOptions.provider = provider;
+        if (type) findOptions.type = type;
+
+        const serviceList = await this.serviceRepo.find({
+            ...findOptions,
+            relations: ['provider', 'type'],
+        });
+        return { serviceList };
     }
 }
 

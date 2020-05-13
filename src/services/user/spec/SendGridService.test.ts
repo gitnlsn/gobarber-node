@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import sendgrid from '@sendgrid/mail';
 
 import { Response } from 'express';

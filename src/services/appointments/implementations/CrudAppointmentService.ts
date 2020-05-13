@@ -1,4 +1,5 @@
-import { inject, singleton } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
+import { FindConditions } from 'typeorm';
 import AppointmentsRepository from '../../../database/repositories/AppointmentsRepository';
 import AppError from '../../../errors/AppError';
 import {
@@ -21,8 +22,9 @@ import {
     RetrieveAppointmentInput,
     RetrieveAppointmentOutput,
 } from '../interfaces/RetrieveAppointment';
+import Appointment from '../../../database/models/Appointment';
 
-@singleton()
+@injectable()
 class CrudAppointmentService
 implements
     CreateAppointmentInterface,
@@ -30,7 +32,7 @@ implements
     DeleteAppointmentInterface,
     RetrieveAppointmentInterface {
     constructor(
-        @inject(AppointmentsRepository) private appointmentRepo: AppointmentsRepository,
+        @inject('AppointmentsRepository') private appointmentRepo: AppointmentsRepository,
     ) { }
 
     async create(createProps: CreateAppointmentInput): Promise<CreateAppointmentOutput> {
@@ -56,6 +58,7 @@ implements
         const updatedApopintment = await this.appointmentRepo.save({
             ...existingAppointment,
             ...appointmentProps,
+
         });
         return { appointment: updatedApopintment };
     }
@@ -71,8 +74,11 @@ implements
         return { appointment: updatedApopintment };
     }
 
-    async retrieve({ id }: RetrieveAppointmentInput): Promise<RetrieveAppointmentOutput> {
-        const existingAppointment = await this.appointmentRepo.findOne({ id });
+    async retrieve(conditions?: FindConditions<Appointment>): Promise<RetrieveAppointmentOutput> {
+        const existingAppointment = await this.appointmentRepo.findOne(
+            conditions,
+            { relations: ['messages', 'service', 'client'] },
+        );
         return { appointment: existingAppointment };
     }
 }

@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import JwtSecurityService from '../implementations/JwtSecurityService';
 
 describe('Security Service', () => {

@@ -1,4 +1,4 @@
-import { inject } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import AppointmentsRepository from '../../../database/repositories/AppointmentsRepository';
 import AppError from '../../../errors/AppError';
 
@@ -14,10 +14,11 @@ import {
     DisableAppointmentOutput,
 } from '../interfaces/DisableAppointment';
 
+@injectable()
 class AppointmentsVisibilityService
 implements EnableAppointmentInterface, DisableAppointmentInterface {
     constructor(
-        @inject(AppointmentsRepository) private shopRepo: AppointmentsRepository,
+        @inject('AppointmentsRepository') private shopRepo: AppointmentsRepository,
     ) { }
 
     async enable({ id }: EnableAppointmentInput): Promise<EnableAppointmentOutput> {

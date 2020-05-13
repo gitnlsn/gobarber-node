@@ -17,7 +17,7 @@ const middleware: (
         });
     }
 
-    console.error(error.name);
+    console.error(error);
     /* eslint-disable-next-line no-console */
     return response.status(500).json({
         status: 'error',

@@ -1,4 +1,5 @@
 import Appointment from '../../../database/models/Appointment';
+import User from '../../../database/models/User';
 
 export interface UpdateAppointmentInput {
     id: string;
@@ -6,6 +7,7 @@ export interface UpdateAppointmentInput {
     observations?: string; /* may be null */
     startsAt?: Date;
     endsAt?: Date;
+    client?: User;
 }
 
 export interface UpdateAppointmentOutput {

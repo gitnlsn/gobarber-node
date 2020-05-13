@@ -1,4 +1,5 @@
-import { inject, singleton } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
+import { FindConditions } from 'typeorm';
 import BarbershopsRepository from '../../../database/repositories/BarbershopsRepository';
 import {
     CrudBarbershopInterface,
@@ -10,13 +11,16 @@ import {
     DeleteBarbershopInput,
     RetrieveBarbershopInput,
     RetrieveBarbershopOutput,
+    RetrieveAllBarbershopOutput,
+    RetrieveAllBarbershopInput,
 } from '../interfaces/CrudBarbershop';
 import AppError from '../../../errors/AppError';
+import Barbershop from '../../../database/models/Barbershop';
 
-@singleton()
-class CRUDBarbershopService implements CrudBarbershopInterface {
+@injectable()
+class CrudBarbershopService implements CrudBarbershopInterface {
     constructor(
-        @inject(BarbershopsRepository) private shopRepo: BarbershopsRepository,
+        @inject('BarbershopsRepository') private shopRepo: BarbershopsRepository,
     ) {}
 
     async create(createProps: CreateBarbershopInput): Promise<CreateBarbershopOutput> {
@@ -56,10 +60,20 @@ class CRUDBarbershopService implements CrudBarbershopInterface {
         return { barbershop: updatedShop };
     }
 
-    async retrieve({ id }: RetrieveBarbershopInput): Promise<RetrieveBarbershopOutput> {
-        const existingBarbershop = await this.shopRepo.findOne({ id });
+    async retrieve(conditions?: FindConditions<Barbershop>): Promise<RetrieveBarbershopOutput> {
+        const existingBarbershop = await this.shopRepo.findOne(
+            conditions,
+            { relations: ['owner', 'services'] },
+        );
         return { barbershop: existingBarbershop };
+    }
+
+    async retrieveAll(props?: RetrieveAllBarbershopInput): Promise<RetrieveAllBarbershopOutput> {
+        const barberShopList = await this.shopRepo.find({
+            relations: ['owner', 'services'],
+        });
+        return { barbershopList: barberShopList };
     }
 }
 
-export default CRUDBarbershopService;
+export default CrudBarbershopService;

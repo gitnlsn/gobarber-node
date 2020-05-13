@@ -57,7 +57,7 @@ class ValidateTokenService implements TokenValidatorInterface {
     }
 
     /* eslint-disable-next-line class-methods-use-this */
-    invalidDate(issuedAt: number, expiresIn: number): boolean {
+    private invalidDate(issuedAt: number, expiresIn: number): boolean {
         const now = new Date().getTime();
         const invalidIssueDate = now < issuedAt * 1000;
         const expired = now > expiresIn * 1000;

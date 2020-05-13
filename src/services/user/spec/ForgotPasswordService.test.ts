@@ -2,7 +2,6 @@ import { Repository } from 'typeorm';
 import User from '../../../database/models/User';
 import ForgotPasswordService from '../implementations/ForgotPasswordService';
 import JwtSecurityService from '../implementations/JwtSecurityService';
-import AppError from '../../../errors/AppError';
 
 describe('ForgotPasswordService', () => {
     const signService = new JwtSecurityService('key');

@@ -1,5 +1,6 @@
 import Barbershop from '../../../database/models/Barbershop';
 import User from '../../../database/models/User';
+import ServiceType from '../../../database/models/ServiceType';
 
 export interface CreateBarbershopInput {
     owner: User;
@@ -25,6 +26,10 @@ export interface RetrieveBarbershopInput {
     id: string;
 }
 
+export interface RetrieveAllBarbershopInput {
+    type?: ServiceType;
+}
+
 export interface CreateBarbershopOutput {
     barbershop: Barbershop;
 }
@@ -41,9 +46,14 @@ export interface RetrieveBarbershopOutput {
     barbershop: Barbershop | undefined;
 }
 
+export interface RetrieveAllBarbershopOutput {
+    barbershopList: Barbershop[];
+}
+
 export interface CrudBarbershopInterface {
     create(createProps: CreateBarbershopInput): Promise<CreateBarbershopOutput>;
     update(updateProps: UpdateBarbershopInput): Promise<UpdateBarbershopOutput>;
     delete(deleteProps: DeleteBarbershopInput): Promise<DeleteBarbershopOutput>;
     retrieve(retrieveProps: RetrieveBarbershopInput): Promise<RetrieveBarbershopOutput>;
+    retrieveAll(retrieveProps?: RetrieveAllBarbershopInput): Promise<RetrieveAllBarbershopOutput>;
 }

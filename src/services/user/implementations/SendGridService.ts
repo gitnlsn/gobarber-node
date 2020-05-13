@@ -1,15 +1,12 @@
-import 'reflect-metadata';
-
 import sendgrid from '@sendgrid/mail';
-import { singleton } from 'tsyringe';
+import { injectable } from 'tsyringe';
 import {
     EmailServiceInterface,
     MailData,
     SendMailResult,
 } from '../interfaces/EmaiServicelInterface';
-import AppError from '../../../errors/AppError';
 
-@singleton()
+@injectable()
 class SendGridService implements EmailServiceInterface {
     constructor(
         /* manual injection through process.env */

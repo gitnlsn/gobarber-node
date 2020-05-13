@@ -5,8 +5,8 @@ import Barbershop from '../../../database/models/Barbershop';
 export interface CreateBarberServiceInput {
     type: ServiceType;
     provider: Barbershop;
-    description: string;
     price: number;
+    description?: string;
     logo?: string;
 }
 
@@ -26,6 +26,15 @@ export interface RetrieveBarberServiceInput {
     id: string;
 }
 
+export interface RetrieveAllBarberServiceInput {
+    type: ServiceType;
+    provider: Barbershop;
+    price?: [{ /* TODO: FILTER */
+        comparison: 'ge' | 'le';
+        value: number;
+    }];
+}
+
 export interface CreateBarberServiceOutput {
     service: BarbershopService;
 }
@@ -42,9 +51,16 @@ export interface RetrieveBarberServiceOutput {
     service: BarbershopService | undefined;
 }
 
+export interface RetrieveAllBarberServiceOutput {
+    serviceList: BarbershopService[];
+}
+
 export interface CrudBarberServiceInterface {
     create(createProps: CreateBarberServiceInput): Promise<CreateBarberServiceOutput>;
     update(updateProps: UpdateBarberServiceInput): Promise<UpdateBarberServiceOutput>;
     delete(deleteProps: DeleteBarberServiceInput): Promise<DeleteBarberServiceOutput>;
     retrieve(retrieveProps: RetrieveBarberServiceInput): Promise<RetrieveBarberServiceOutput>;
+    retrieveAll(
+        retrieveProps?: RetrieveAllBarberServiceInput
+    ): Promise<RetrieveAllBarberServiceOutput>;
 }

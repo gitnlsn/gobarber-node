@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { hashSync } from 'bcryptjs';
 import { injectable, inject } from 'tsyringe';
 import validator from 'validator';

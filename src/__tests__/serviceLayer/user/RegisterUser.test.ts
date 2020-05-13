@@ -25,7 +25,7 @@ describe('Register User', () => {
     beforeAll(async () => {
         connection = await createConnection();
         await connection.runMigrations();
-        registerRepositories();
+        registerRepositories({ typeormConnection: connection });
         registerServices();
     });
 
@@ -132,7 +132,7 @@ describe('Register User', () => {
             password: validPassword,
         });
 
-        expect(
+        await expect(
             service.execute({
                 name: validUserName,
                 email: validEmail,
