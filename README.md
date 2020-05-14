@@ -26,9 +26,9 @@ O projeto está sendo implementado em arquitetura baseada em camadas:
 
 A `camada de acesso` depende principalmente do [Typeorm](https://typeorm.io). O repo implementa migrations, models e custom repositories.
 
-A `camada de serviços` implementa a lógica de negócios do projeto. Ela acessa dados por meio dos repositories e ativa serviços secundários, como o SendGrid.
+A `camada de serviços` implementa a lógica de negócios do projeto. Ela acessa dados por meio dos repositories e ativa serviços secundários, como o [SendGrid](https://sendgrid.com).
 
-A `camada de rede` implementa a interface HTTP com express. A autenticação é feita por JWT.
+A `camada de rede` implementa a interface HTTP com [Express](https://expressjs.com). A autenticação é feita por [JWT](https://www.npmjs.com/package/jsonwebtoken).
 
 O [Tsyringe](https://github.com/microsoft/tsyringe) é usado para prover as dependências entre camadas de rede e serviços, e entre camadas de serviços e acesso. *Camada de rede não acessa camada de acesso a dados diretamente*.
 
