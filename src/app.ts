@@ -27,24 +27,38 @@ export async function GoBarberServer({
     app.use(express.json());
     app.use(cors());
 
-    app.use(
-        '/appointments',
-        AuthenticateMiddleware,
-        routes.AppointmentsRouter,
-    );
+    /*
+        General Retrievers:
 
-    app.use(
-        '/services',
-        AuthenticateMiddleware,
-        routes.BarberServicesRouter,
-    );
+        appointments
+            - by availability
+            - by barbershop (TODO)
+            - by service (TODO)
+        services
+            - find by serviceType
+            - find by barbershop
+            - find by price range (TODO)
+        barbershops
+            - find by provided serviceTypes (TODO)
+     */
+    app.use('/appointments', routes.AppointmentsFinderRouter);
+    app.use('/services', routes.BarbershopServiceFinder);
+    app.use('/barbershops', routes.BarbershopProfileFinder);
 
-    app.use(
-        '/barbershop',
-        AuthenticateMiddleware,
-        routes.BarbershopRouter,
-    );
+    /*
+        Crud to
+            - barbershop appointments management
+            - barbershop services management
+            - barbershop profile management
+     */
+    app.use('/barbershop/appointment', AuthenticateMiddleware, routes.BarbershopAppointmentsRouter);
+    app.use('/barbershop/service', AuthenticateMiddleware, routes.BarberServicesRouter);
+    app.use('/barbershop', AuthenticateMiddleware, routes.BarbershopProfileRouter);
 
+    /* Client Accept/Cancel routes to appointment */
+    app.use('/client/appointment/', AuthenticateMiddleware, routes.BarberClientAppointmentsRouter);
+
+    /* Authentication related routes */
     app.use('/user', routes.SessionRouter);
 
     app.use(errorMidleware);

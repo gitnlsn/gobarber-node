@@ -11,14 +11,9 @@ import CrudServiceTypeService from '../../services/serviceType/implementations/C
 import AppError from '../../errors/AppError';
 import BarberServiceVisibilityService from '../../services/baberservice/implementations/BarberServiceVisibilityService';
 import IdentifyBarbershop from '../middlewares/IdentifyBarbershop';
-import CrudBarbershopService from '../../services/babershop/implementations/CrudBarbershopService';
-import { RetrieveAllBarberServiceInput } from '../../services/baberservice/interfaces/CrudBarberService';
 
 const router = Router();
 
-/*
-    Depends on identifyBarbershop middleware
- */
 router.post('/', IdentifyBarbershop, async (
     request: Request,
     response: Response,
@@ -36,7 +31,7 @@ router.post('/', IdentifyBarbershop, async (
                     id: barbershopId,
                 },
                 description,
-                logo,
+                logoUrl,
             },
         } = request.body;
 
@@ -66,7 +61,7 @@ router.post('/', IdentifyBarbershop, async (
             price,
             type: serviceType,
             description,
-            logo,
+            logoUrl,
         });
 
         return response.status(200).json({ service });
@@ -88,52 +83,6 @@ router.get('/:id', async (
         const { service } = await crudBarberServiceService.retrieve({ id });
 
         return response.status(200).json({ service });
-    } catch (error) {
-        return next(error);
-    }
-});
-
-router.get('/', async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-) => {
-    try {
-        const {
-            barbershopId,
-            serviceTypeId,
-        } = request.params;
-
-        const crudBarbershopService = container.resolve(CrudBarbershopService);
-        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
-        const crudServiceTypeService = container.resolve(CrudServiceTypeService);
-
-        const retrieveOptions = {} as RetrieveAllBarberServiceInput;
-
-        if (barbershopId) {
-            const { barbershop } = await crudBarbershopService.retrieve({
-                id: barbershopId,
-            });
-
-            if (!barbershop) {
-                return next(new AppError(`Provided barbershop ${barbershopId} does not exist`));
-            }
-            retrieveOptions.provider = barbershop;
-        }
-
-        if (serviceTypeId) {
-            const { serviceType } = await crudServiceTypeService.retrieve({
-                id: serviceTypeId,
-            });
-
-            if (!serviceType) {
-                return next(new AppError(`Provided ServiceType ${serviceTypeId} does not exist`));
-            }
-            retrieveOptions.type = serviceType;
-        }
-
-        const { serviceList } = await crudBarberServiceService.retrieveAll(retrieveOptions);
-        return response.status(200).json({ serviceList });
     } catch (error) {
         return next(error);
     }
@@ -210,7 +159,18 @@ router.put('/:id', IdentifyBarbershop, async (
             },
         } = request;
 
-        if (serviceId !== barbershop.id) {
+        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
+        const crudServiceTypeService = container.resolve(CrudServiceTypeService);
+
+        const { service: currentService } = await crudBarberServiceService.retrieve({
+            id: serviceId,
+        });
+
+        if (!currentService) {
+            return next(new AppError(`Service ${serviceId} does not exist`));
+        }
+
+        if (currentService.provider.id !== barbershop.id) {
             return next(new AppError('Unauthorized', 401));
         }
 
@@ -229,19 +189,8 @@ router.put('/:id', IdentifyBarbershop, async (
             return next(new AppError('Missing update fields.'));
         }
 
-        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
-        const crudServiceTypeService = container.resolve(CrudServiceTypeService);
-
-        const { service: currentService } = await crudBarberServiceService.retrieve({
-            id: serviceId,
-        });
-
-        if (!currentService) {
-            return next(new AppError(`Service ${serviceId} does not exist`));
-        }
-
         /* Compose new service to update */
-        const newService = { ...currentService };
+        const newService = { ...currentService, logoUrl: undefined };
         if (newDescription) newService.description = newDescription;
         if (newPrice) newService.price = newPrice;
         if (newLogo) newService.logoUrl = newLogo;
@@ -279,11 +228,19 @@ router.delete('/:id', IdentifyBarbershop, async (
             },
         } = request;
 
-        if (serviceId !== barbershop.id) {
-            return next(new AppError('Unauthorized', 401));
+        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
+
+        const { service: existingService } = await crudBarberServiceService.retrieve({
+            id: serviceId,
+        });
+
+        if (!existingService) {
+            return next(new AppError(`Service ${serviceId} does not exist`));
         }
 
-        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
+        if (existingService.provider.id !== barbershop.id) {
+            return next(new AppError('Unauthorized', 401));
+        }
 
         const { service: deletedService } = await crudBarberServiceService.delete({
             id: serviceId,

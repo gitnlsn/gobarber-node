@@ -1,19 +1,16 @@
 import request from 'supertest';
-import express, { Response } from 'express';
-import { Connection, createConnection, Repository } from 'typeorm';
+import express from 'express';
+import { Connection, createConnection } from 'typeorm';
 
 import { createHash } from 'crypto';
 import registerRepositories from '../../database/container';
 import { GoBarberServer } from '../../app';
 import registerServices from '../../services/container';
-import User from '../../database/models/User';
-import Barbershop from '../../database/models/Barbershop';
 
 describe('Sessions Router', () => {
     let expressApp: express.Express;
     let connection: Connection;
 
-    let registeredUser: User;
     let clientToken: string;
 
     beforeAll(async () => {
@@ -29,14 +26,13 @@ describe('Sessions Router', () => {
     });
 
     beforeEach(async () => {
-        const { body: { token, user } } = await request(expressApp)
+        const { body: { token } } = await request(expressApp)
             .post('/user/register')
             .send({
                 email: 'john@mail.com',
                 password: createHash('sha256').update('12345678').digest('hex'),
             });
 
-        registeredUser = user;
         clientToken = token;
     });
 
@@ -50,9 +46,9 @@ describe('Sessions Router', () => {
         await connection.close();
     });
 
-    test('Registers a barbershop', async () => {
+    test('POST "/barbershop" - Registers a barbershop', async () => {
         const response = await request(expressApp)
-            .post('/barbershop/')
+            .post('/barbershop')
             .set('Authorization', `Bearer ${clientToken}`)
             .send({
                 barbershop: {
@@ -82,9 +78,9 @@ describe('Sessions Router', () => {
         expect(storedBarbershop).toHaveProperty('updated_at');
     });
 
-    test('Updates a barbershop', async () => {
+    test('PUT "/barbershop" - Updates a barbershop', async () => {
         const { body } = await request(expressApp)
-            .post('/barbershop/')
+            .post('/barbershop')
             .set('Authorization', `Bearer ${clientToken}`)
             .send({
                 barbershop: {
@@ -119,10 +115,10 @@ describe('Sessions Router', () => {
         expect(updatedBarbershop).toHaveProperty('description', 'Have a nice haircut at johns');
     });
 
-    test.skip('Disables and Enables a barbershop', async () => {
+    test.skip('PUT "/barbershop/enable/:id" "/disable/:id" - Disables and Enables barbershop', async () => {
         /* Unimplemented */
         const { body } = await request(expressApp)
-            .post('/barbershop/')
+            .post('/barbershop')
             .set('Authorization', `Bearer ${clientToken}`)
             .send({
                 barbershop: {
@@ -170,9 +166,9 @@ describe('Sessions Router', () => {
         expect(enabledBarbershop).toHaveProperty('status', 'enabled');
     });
 
-    test('Deletes a barbershop', async () => {
+    test('DELETE "/barbershop" - Deletes a barbershop', async () => {
         const { body } = await request(expressApp)
-            .post('/barbershop/')
+            .post('/barbershop')
             .set('Authorization', `Bearer ${clientToken}`)
             .send({
                 barbershop: {
@@ -198,9 +194,9 @@ describe('Sessions Router', () => {
         expect(deletedBarbershop).toHaveProperty('status', 'deleted');
     });
 
-    test('Retrieve a barbershop by id', async () => {
+    test('GET "/barbershop/:id" - Retrieve a barbershop by id', async () => {
         const { body } = await request(expressApp)
-            .post('/barbershop/')
+            .post('/barbershop')
             .set('Authorization', `Bearer ${clientToken}`)
             .send({
                 barbershop: {

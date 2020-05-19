@@ -62,14 +62,19 @@ class BarberServicesRepository extends AbstractRepository<BarbershopService> {
         service: BarbershopService,
         options?: SaveOptions,
     ): Promise<BarbershopService> {
-        const existingService = await this.repository.findOne({
-            where: {
-                owner: { id: service.id },
-                status: In(['enabled', 'disabled']),
-            },
-        });
+        /* user must provide service id for save to behave as update */
+        if (service.id) {
+            const existingService = await this.repository.findOne({
+                where: {
+                    id: service.id,
+                    status: In(['enabled', 'disabled']),
+                },
+            });
 
-        if (existingService) {
+            if (!existingService) {
+                throw Error(`Service id ${service.id} was provided, but no existing service was found in database`);
+            }
+
             return this.repository.save({
                 ...existingService,
                 ...service,

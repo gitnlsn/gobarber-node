@@ -1,5 +1,12 @@
 import { inject, injectable } from 'tsyringe';
-import { FindConditions } from 'typeorm';
+import {
+    FindConditions,
+    Not,
+    IsNull,
+    MoreThan,
+    LessThan,
+} from 'typeorm';
+
 import AppointmentsRepository from '../../../database/repositories/AppointmentsRepository';
 import AppError from '../../../errors/AppError';
 import {
@@ -21,6 +28,8 @@ import {
     RetrieveAppointmentInterface,
     RetrieveAppointmentInput,
     RetrieveAppointmentOutput,
+    RetrieveAllAppointmentInput,
+    RetrieveAllAppointmentOutput,
 } from '../interfaces/RetrieveAppointment';
 import Appointment from '../../../database/models/Appointment';
 
@@ -80,6 +89,45 @@ implements
             { relations: ['messages', 'service', 'client'] },
         );
         return { appointment: existingAppointment };
+    }
+
+    async retrieveAll({
+        available,
+        serviceId,
+        providerId,
+        serviceTypeId,
+        period,
+    }: RetrieveAllAppointmentInput): Promise<RetrieveAllAppointmentOutput> {
+        if (serviceId) {
+            const appointmentList = await this.appointmentRepo.find({
+                where: {
+                    service: { id: serviceId },
+                    client: available ? Not(IsNull()) : IsNull(),
+                    startsAt: MoreThan(period?.min),
+                    endsAt: LessThan(period?.max),
+                },
+                relations: ['client', 'service', 'service.provider', 'service.type'],
+            });
+            return { appointmentList };
+        }
+
+        if (providerId || serviceTypeId) {
+            const appointmentList = await this.appointmentRepo.find({
+                where: {
+                    service: {
+                        provider: providerId ? { id: providerId } : null,
+                        type: serviceId ? { id: serviceTypeId } : null,
+                    },
+                    client: available ? Not(IsNull()) : IsNull(),
+                    startsAt: MoreThan(period?.min),
+                    endsAt: LessThan(period?.max),
+                },
+                relations: ['client', 'service', 'service.provider', 'service.type'],
+            });
+            return { appointmentList };
+        }
+
+        return { appointmentList: [] };
     }
 }
 

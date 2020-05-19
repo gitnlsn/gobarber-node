@@ -16,7 +16,7 @@ import AppError from '../../errors/AppError';
  */
 const router = Router();
 
-router.post('/', async (
+router.post('', async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -63,20 +63,6 @@ router.get('/:id', async (
         }
 
         return response.status(200).json({ barbershop });
-    } catch (error) {
-        return next(error);
-    }
-});
-
-router.get('/', async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-) => {
-    try {
-        const crudBarbershopService = container.resolve(CrudBarbershopService);
-        const { barbershopList } = await crudBarbershopService.retrieveAll();
-        return response.status(200).json({ barbershopList });
     } catch (error) {
         return next(error);
     }

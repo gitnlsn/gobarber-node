@@ -5,6 +5,7 @@ import Barbershop from '../database/models/Barbershop';
 declare global {
     namespace Express {
         interface Request {
+            clientToken: string;
             user: User;
             barbershop: Barbershop;
         }

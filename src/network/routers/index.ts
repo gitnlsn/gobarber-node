@@ -1,11 +1,25 @@
 import SessionRouter from './SessionRouter';
-import BarbershopRouter from './BarbershopProfileRouter';
+
+import BarberClientAppointmentsRouter from './BarberClientAppointmentsRouter';
+
+import BarbershopProfileRouter from './BarbershopProfileRouter';
 import BarberServicesRouter from './BarbershopServicesRouter';
-import AppointmentsRouter from './AppointmentsRouter';
+import BarbershopAppointmentsRouter from './BarbershopAppointmentsRouter';
+
+import AppointmentsFinderRouter from './AppointmentsFinderRouter';
+import BarbershopServiceFinder from './BarbershopServiceFinder';
+import BarbershopProfileFinder from './BarbershopProfileFinder';
 
 export default {
     SessionRouter,
-    BarbershopRouter,
+
+    BarberClientAppointmentsRouter,
+
+    BarbershopProfileRouter,
     BarberServicesRouter,
-    AppointmentsRouter,
+    BarbershopAppointmentsRouter,
+
+    AppointmentsFinderRouter,
+    BarbershopServiceFinder,
+    BarbershopProfileFinder,
 };

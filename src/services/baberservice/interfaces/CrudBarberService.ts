@@ -7,7 +7,7 @@ export interface CreateBarberServiceInput {
     provider: Barbershop;
     price: number;
     description?: string;
-    logo?: string;
+    logoUrl?: string;
 }
 
 export interface UpdateBarberServiceInput {
@@ -15,7 +15,7 @@ export interface UpdateBarberServiceInput {
     serviceType?: ServiceType;
     description?: string;
     price?: number;
-    logo?: string;
+    logoUrl?: string;
 }
 
 export interface DeleteBarberServiceInput {
@@ -28,7 +28,7 @@ export interface RetrieveBarberServiceInput {
 
 export interface RetrieveAllBarberServiceInput {
     type: ServiceType;
-    provider: Barbershop;
+    provider?: Barbershop;
     price?: [{ /* TODO: FILTER */
         comparison: 'ge' | 'le';
         value: number;
