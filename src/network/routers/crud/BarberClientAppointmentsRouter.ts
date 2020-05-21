@@ -5,9 +5,9 @@ import {
     NextFunction,
 } from 'express';
 import { container } from 'tsyringe';
-import identifyBarbershop from '../middlewares/IdentifyBarbershop';
-import AppError from '../../errors/AppError';
-import CrudAppointmentService from '../../services/appointments/implementations/CrudAppointmentService';
+import identifyBarbershop from '../../middlewares/IdentifyBarbershop';
+import AppError from '../../../errors/AppError';
+import CrudAppointmentService from '../../../services/appointments/implementations/CrudAppointmentService';
 
 const router = Router();
 
@@ -45,13 +45,17 @@ router.put('/accept/:id', identifyBarbershop, async (
             return next(new AppError(`Appointment ${appointmentId} does not exist`));
         }
 
-        const { appointment } = await crudAppointmentService.update({
+        if (existingAppointment.client) {
+            return next(new AppError(`Appointment ${appointmentId} was already accepted`));
+        }
+
+        const { appointment: acceptedAppointment } = await crudAppointmentService.update({
             id: appointmentId,
             client,
             observations,
         });
 
-        return response.status(200).json({ appointment });
+        return response.status(200).json({ appointment: acceptedAppointment });
     } catch (error) {
         return next(error);
     }
@@ -72,7 +76,7 @@ router.put('/cancel/:id', identifyBarbershop, async (
         } = request;
 
         if (confusedBarbershop) {
-            return next(new AppError('Barbershop can not cancel an appointment. Please contact the client, as soon as possible.'));
+            return next(new AppError('Unauthorized. Barbershop cannot cancel an appointment. Please contact the client, as soon as possible.', 401));
         }
 
         const crudAppointmentService = container.resolve(CrudAppointmentService);
@@ -86,16 +90,16 @@ router.put('/cancel/:id', identifyBarbershop, async (
         }
 
         if (client.id !== existingAppointment.client.id) {
-            return next(new AppError('Client can not cancel an appointment not of its own'));
+            return next(new AppError('Unauthorized. Appointment is not of its own', 401));
         }
 
-        const { appointment } = await crudAppointmentService.update({
+        const { appointment: canceledAppointment } = await crudAppointmentService.update({
             id: appointmentId,
             client: undefined,
             observations: undefined,
         });
 
-        return response.status(200).json({ appointment });
+        return response.status(200).json({ appointment: canceledAppointment });
     } catch (error) {
         return next(error);
     }

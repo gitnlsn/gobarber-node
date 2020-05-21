@@ -58,7 +58,10 @@ implements
         id,
         ...appointmentProps
     }: UpdateAppointmentInput): Promise<UpdateAppointmentOutput> {
-        const existingAppointment = await this.appointmentRepo.findOne({ id });
+        const existingAppointment = await this.appointmentRepo.findOne(
+            { id },
+            { relations: ['messages', 'client', 'service', 'service.provider', 'service.type'] },
+        );
 
         if (!existingAppointment) {
             throw new AppError('Barbershop with specified id does not exists');
@@ -67,13 +70,15 @@ implements
         const updatedApopintment = await this.appointmentRepo.save({
             ...existingAppointment,
             ...appointmentProps,
-
         });
         return { appointment: updatedApopintment };
     }
 
     async delete({ id }: DeleteAppointmentInput): Promise<DeleteAppointmentOutput> {
-        const existingApopintment = await this.appointmentRepo.findOne({ id });
+        const existingApopintment = await this.appointmentRepo.findOne(
+            { id },
+            { relations: ['messages', 'client', 'service', 'service.provider', 'service.type'] },
+        );
 
         if (!existingApopintment) {
             throw new AppError('Barbershop with specified id does not exists');
@@ -86,7 +91,7 @@ implements
     async retrieve(conditions?: FindConditions<Appointment>): Promise<RetrieveAppointmentOutput> {
         const existingAppointment = await this.appointmentRepo.findOne(
             conditions,
-            { relations: ['messages', 'service', 'client'] },
+            { relations: ['messages', 'client', 'service', 'service.provider', 'service.type'] },
         );
         return { appointment: existingAppointment };
     }
@@ -106,7 +111,7 @@ implements
                     startsAt: MoreThan(period?.min),
                     endsAt: LessThan(period?.max),
                 },
-                relations: ['client', 'service', 'service.provider', 'service.type'],
+                relations: ['messages', 'client', 'service', 'service.provider', 'service.type'],
             });
             return { appointmentList };
         }
@@ -122,7 +127,7 @@ implements
                     startsAt: MoreThan(period?.min),
                     endsAt: LessThan(period?.max),
                 },
-                relations: ['client', 'service', 'service.provider', 'service.type'],
+                relations: ['messages', 'client', 'service', 'service.provider', 'service.type'],
             });
             return { appointmentList };
         }

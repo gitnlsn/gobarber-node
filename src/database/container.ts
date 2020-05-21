@@ -10,6 +10,7 @@ import Appointment from './models/Appointment';
 import BarberServicesRepository from './repositories/BarberServiceRepository';
 import BarbershopsRepository from './repositories/BarbershopsRepository';
 import ServiceType from './models/ServiceType';
+import AppointmentsRepository from './repositories/AppointmentsRepository';
 
 export interface RegisterRepositoriesProps {
     typeormConnection: Connection;
@@ -17,20 +18,10 @@ export interface RegisterRepositoriesProps {
 
 function registerRepositories({
     typeormConnection,
-}: RegisterRepositoriesProps) {
+}: RegisterRepositoriesProps): void {
     container.register<Repository<User>>(
         'UsersRepository',
         { useValue: typeormConnection.getRepository(User) },
-    );
-
-    container.register<Repository<Barbershop>>(
-        'BarbershopsRepository',
-        { useValue: typeormConnection.getRepository(Barbershop) },
-    );
-
-    container.register<Repository<Appointment>>(
-        'AppointmentsRepository',
-        { useValue: typeormConnection.getRepository(Appointment) },
     );
 
     container.register<Repository<ServiceType>>(
@@ -46,6 +37,11 @@ function registerRepositories({
     container.register<BarbershopsRepository>(
         'BarbershopsRepository',
         { useValue: typeormConnection.getCustomRepository(BarbershopsRepository) },
+    );
+
+    container.register<AppointmentsRepository>(
+        'AppointmentsRepository',
+        { useValue: typeormConnection.getCustomRepository(AppointmentsRepository) },
     );
 }
 

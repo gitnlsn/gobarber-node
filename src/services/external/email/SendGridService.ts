@@ -4,7 +4,7 @@ import {
     EmailServiceInterface,
     MailData,
     SendMailResult,
-} from '../interfaces/EmaiServicelInterface';
+} from './EmaiServicelInterface';
 
 @injectable()
 class SendGridService implements EmailServiceInterface {

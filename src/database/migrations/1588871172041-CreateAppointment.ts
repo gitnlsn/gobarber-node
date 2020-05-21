@@ -21,6 +21,7 @@ class CreateAppointment1588871172041 implements MigrationInterface {
                         /* A description to the appointment */
                         name: 'title',
                         type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         /* points to users: client chooses an appointment */

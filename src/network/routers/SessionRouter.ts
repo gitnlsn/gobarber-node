@@ -12,7 +12,7 @@ import AuthenticateUserService from '../../services/user/implementations/Authent
 import ValidateTokenService from '../../services/user/implementations/ValidateTokenService';
 import ResetPasswordService from '../../services/user/implementations/ResetPasswordService';
 import ForgotPasswordService from '../../services/user/implementations/ForgotPasswordService';
-import SendGridService from '../../services/user/implementations/SendGridService';
+import SendGridService from '../../services/external/email/SendGridService';
 import AppError from '../../errors/AppError';
 
 const routes = Router();

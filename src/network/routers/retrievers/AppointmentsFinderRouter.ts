@@ -5,7 +5,7 @@ import {
     NextFunction,
 } from 'express';
 import { container } from 'tsyringe';
-import CrudAppointmentService from '../../services/appointments/implementations/CrudAppointmentService';
+import CrudAppointmentService from '../../../services/appointments/implementations/CrudAppointmentService';
 
 const router = Router();
 

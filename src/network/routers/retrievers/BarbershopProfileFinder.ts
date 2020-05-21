@@ -5,7 +5,7 @@ import {
     NextFunction,
 } from 'express';
 import { container } from 'tsyringe';
-import CrudBarbershopService from '../../services/babershop/implementations/CrudBarbershopService';
+import CrudBarbershopService from '../../../services/babershop/implementations/CrudBarbershopService';
 
 const router = Router();
 

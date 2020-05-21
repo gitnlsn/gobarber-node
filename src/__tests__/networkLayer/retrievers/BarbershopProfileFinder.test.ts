@@ -3,9 +3,9 @@ import express from 'express';
 import { Connection, createConnection } from 'typeorm';
 
 import { createHash } from 'crypto';
-import registerRepositories from '../../database/container';
-import { GoBarberServer } from '../../app';
-import registerServices from '../../services/container';
+import registerRepositories from '../../../database/container';
+import { GoBarberServer } from '../../../app';
+import registerServices from '../../../services/container';
 
 describe('Sessions Router', () => {
     let expressApp: express.Express;

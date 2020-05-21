@@ -5,11 +5,11 @@ import {
     NextFunction,
 } from 'express';
 import { container } from 'tsyringe';
-import identifyBarbershop from '../middlewares/IdentifyBarbershop';
-import AppError from '../../errors/AppError';
-import CrudBarberServiceService from '../../services/baberservice/implementations/CrudBarberServiceService';
-import CrudAppointmentService from '../../services/appointments/implementations/CrudAppointmentService';
-import AppointmentsVisibilityService from '../../services/appointments/implementations/AppointmentVisibilityService';
+import identifyBarbershop from '../../middlewares/IdentifyBarbershop';
+import AppError from '../../../errors/AppError';
+import CrudBarberServiceService from '../../../services/baberservice/implementations/CrudBarberServiceService';
+import CrudAppointmentService from '../../../services/appointments/implementations/CrudAppointmentService';
+import AppointmentsVisibilityService from '../../../services/appointments/implementations/AppointmentVisibilityService';
 
 const router = Router();
 
@@ -31,6 +31,10 @@ router.post('/', identifyBarbershop, async (
         const {
             barbershop,
         } = request;
+
+        if (!barbershop) {
+            return next(new AppError('Unauthorized', 401));
+        }
 
         const crudBarberServiceService = container.resolve(CrudBarberServiceService);
         const crudAppointmentService = container.resolve(CrudAppointmentService);
@@ -72,14 +76,11 @@ router.put('/enable/:id', identifyBarbershop, async (
         } = request;
 
         if (!owner) {
-            return next(new AppError(
-                'Only barbershops may enable appointments',
-            ));
+            return next(new AppError('Unauthorized', 401));
         }
 
         const crudAppointmentService = container.resolve(CrudAppointmentService);
         const appointmentVisibilityService = container.resolve(AppointmentsVisibilityService);
-        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
 
         const {
             appointment: existingAppointment,
@@ -89,16 +90,8 @@ router.put('/enable/:id', identifyBarbershop, async (
             return next(new AppError(`Appointment ${appointmentId} does not exist`));
         }
 
-        const { service } = await crudBarberServiceService.retrieve({
-            id: existingAppointment.service.id,
-        });
-
-        if (!service) {
-            return next(new Error('Service was supposed to exist. An appointment exists without a defined service.'));
-        }
-
-        if (service.provider.id !== owner.id) {
-            return next(new AppError('Barbershop is not allowed to enable not of its own'));
+        if (existingAppointment.service.provider.id !== owner.id) {
+            return next(new AppError('Unauthorized', 401));
         }
 
         const {
@@ -125,14 +118,11 @@ router.put('/disable/:id', identifyBarbershop, async (
         } = request;
 
         if (!owner) {
-            return next(new AppError(
-                'Only barbershops may disable appointments',
-            ));
+            return next(new AppError('Unauthorized', 401));
         }
 
         const crudAppointmentService = container.resolve(CrudAppointmentService);
         const appointmentVisibilityService = container.resolve(AppointmentsVisibilityService);
-        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
 
         const {
             appointment: existingAppointment,
@@ -142,16 +132,8 @@ router.put('/disable/:id', identifyBarbershop, async (
             return next(new AppError(`Appointment ${appointmentId} does not exist`));
         }
 
-        const { service } = await crudBarberServiceService.retrieve({
-            id: existingAppointment.service.id,
-        });
-
-        if (!service) {
-            return next(new Error('Service was supposed to exist. An appointment exists without a defined service.'));
-        }
-
-        if (service.provider.id !== owner.id) {
-            return next(new AppError('Barbershop is not allowed to disable an appointment not of its own'));
+        if (existingAppointment.service.provider.id !== owner.id) {
+            return next(new AppError('Unauthorized', 401));
         }
 
         const {
@@ -178,20 +160,14 @@ router.put('/:id', identifyBarbershop, async (
         } = request;
 
         const {
-            title,
-            startsAt,
-            endsAt,
-            observations,
+            appointment: appointmentProps,
         } = request.body;
 
         if (!owner) {
-            return next(new AppError(
-                'Only barbershops may update appointments',
-            ));
+            return next(new AppError('Unauthorized', 401));
         }
 
         const crudAppointmentService = container.resolve(CrudAppointmentService);
-        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
 
         const {
             appointment: existingAppointment,
@@ -201,26 +177,15 @@ router.put('/:id', identifyBarbershop, async (
             return next(new AppError(`Appointment ${appointmentId} does not exist`));
         }
 
-        const { service } = await crudBarberServiceService.retrieve({
-            id: existingAppointment.service.id,
-        });
-
-        if (!service) {
-            return next(new Error('Service was supposed to exist. An appointment exists without a defined service.'));
-        }
-
-        if (service.provider.id !== owner.id) {
-            return next(new AppError('Barbershop is not allowed to update an appointment not of its own'));
+        if (existingAppointment.service.provider.id !== owner.id) {
+            return next(new AppError('Unauthorized', 401));
         }
 
         const {
             appointment: updatedAppointment,
         } = await crudAppointmentService.update({
             id: appointmentId,
-            title,
-            startsAt,
-            endsAt,
-            observations,
+            ...appointmentProps,
         });
 
         return response.status(200).json({ appointment: updatedAppointment });
@@ -229,7 +194,7 @@ router.put('/:id', identifyBarbershop, async (
     }
 });
 
-router.get('/:id', identifyBarbershop, async (
+router.get('/:id', async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -267,13 +232,10 @@ router.delete('/:id', identifyBarbershop, async (
         } = request;
 
         if (!owner) {
-            return next(new AppError(
-                'Only barbershops may delete appointments',
-            ));
+            return next(new AppError('Unauthorized', 401));
         }
 
         const crudAppointmentService = container.resolve(CrudAppointmentService);
-        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
 
         const {
             appointment: existingAppointment,
@@ -283,16 +245,12 @@ router.delete('/:id', identifyBarbershop, async (
             return next(new AppError(`Appointment ${appointmentId} does not exist`));
         }
 
-        const { service } = await crudBarberServiceService.retrieve({
-            id: existingAppointment.service.id,
-        });
-
-        if (!service) {
-            return next(new Error('Service was supposed to exist. An appointment exists without a defined service.'));
+        if (existingAppointment.service.provider.id !== owner.id) {
+            return next(new AppError('Unauthorized', 401));
         }
 
-        if (service.provider.id !== owner.id) {
-            return next(new AppError('Barbershop is not allowed to delete an appointment not of its own'));
+        if (existingAppointment.client) {
+            return next(new AppError('Can not delete accepted appointment. It must be canceled first.'));
         }
 
         const {

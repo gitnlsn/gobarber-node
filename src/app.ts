@@ -20,7 +20,10 @@ export async function GoBarberServer({
 }: GoBarberConfigs): Promise<express.Express> {
     const app = express();
 
+    /* Build database */
     await typeormConnection.runMigrations();
+
+    /* Regsiter dependencies in Tsyringe */
     registerRepositories({ typeormConnection });
     registerServices();
 
@@ -46,17 +49,20 @@ export async function GoBarberServer({
     app.use('/barbershops', routes.BarbershopProfileFinder);
 
     /*
-        Crud to
-            - barbershop appointments management
-            - barbershop services management
-            - barbershop profile management
+        Barbershop management
+            - crud to appointments
+            - crud to services
+            - crud to profile
      */
     app.use('/barbershop/appointment', AuthenticateMiddleware, routes.BarbershopAppointmentsRouter);
     app.use('/barbershop/service', AuthenticateMiddleware, routes.BarberServicesRouter);
     app.use('/barbershop', AuthenticateMiddleware, routes.BarbershopProfileRouter);
 
-    /* Client Accept/Cancel routes to appointment */
-    app.use('/client/appointment/', AuthenticateMiddleware, routes.BarberClientAppointmentsRouter);
+    /*
+        Client management
+            - Accept/Cancel appointment
+     */
+    app.use('/client/appointment', AuthenticateMiddleware, routes.BarberClientAppointmentsRouter);
 
     /* Authentication related routes */
     app.use('/user', routes.SessionRouter);

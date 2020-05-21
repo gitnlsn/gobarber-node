@@ -3,12 +3,12 @@ import express from 'express';
 import { Connection, createConnection } from 'typeorm';
 
 import { createHash } from 'crypto';
-import registerRepositories from '../../database/container';
-import { GoBarberServer } from '../../app';
-import registerServices from '../../services/container';
-import User from '../../database/models/User';
-import Barbershop from '../../database/models/Barbershop';
-import ServiceType from '../../database/models/ServiceType';
+import registerRepositories from '../../../database/container';
+import { GoBarberServer } from '../../../app';
+import registerServices from '../../../services/container';
+import User from '../../../database/models/User';
+import Barbershop from '../../../database/models/Barbershop';
+import ServiceType from '../../../database/models/ServiceType';
 
 describe('Sessions Router', () => {
     let expressApp: express.Express;

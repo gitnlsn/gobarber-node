@@ -5,12 +5,12 @@ import {
     NextFunction,
 } from 'express';
 import { container } from 'tsyringe';
-import CrudBarberServiceService from '../../services/baberservice/implementations/CrudBarberServiceService';
-import CrudServiceTypeService from '../../services/serviceType/implementations/CrudBarbershopService';
+import CrudBarberServiceService from '../../../services/baberservice/implementations/CrudBarberServiceService';
+import CrudServiceTypeService from '../../../services/barberServiceType/implementations/CrudBarbershopService';
 
-import AppError from '../../errors/AppError';
-import CrudBarbershopService from '../../services/babershop/implementations/CrudBarbershopService';
-import { RetrieveAllBarberServiceInput } from '../../services/baberservice/interfaces/CrudBarberService';
+import AppError from '../../../errors/AppError';
+import CrudBarbershopService from '../../../services/babershop/implementations/CrudBarbershopService';
+import { RetrieveAllBarberServiceInput } from '../../../services/baberservice/interfaces/CrudBarberService';
 
 const router = Router();
 

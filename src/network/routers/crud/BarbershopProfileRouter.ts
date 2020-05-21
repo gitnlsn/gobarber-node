@@ -5,10 +5,10 @@ import {
     NextFunction,
 } from 'express';
 import { container } from 'tsyringe';
-import CrudBarbershopService from '../../services/babershop/implementations/CrudBarbershopService';
-import identifyBarbershop from '../middlewares/IdentifyBarbershop';
-import Barbershop from '../../database/models/Barbershop';
-import AppError from '../../errors/AppError';
+import CrudBarbershopService from '../../../services/babershop/implementations/CrudBarbershopService';
+import identifyBarbershop from '../../middlewares/IdentifyBarbershop';
+import Barbershop from '../../../database/models/Barbershop';
+import AppError from '../../../errors/AppError';
 
 /*
     Use case

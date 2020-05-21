@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import sendgrid from '@sendgrid/mail';
 
 import { Response } from 'express';
-import SendGridService from '../implementations/SendGridService';
+import SendGridService from './SendGridService';
 
 jest.mock('@sendgrid/mail');
 
