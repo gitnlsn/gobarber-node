@@ -33,6 +33,14 @@ router.post('', async (
 
         const crudBarbershopService = container.resolve(CrudBarbershopService);
 
+        const {
+            barbershop: existingBarbershop,
+        } = await crudBarbershopService.retrieve({ owner: user });
+
+        if (existingBarbershop) {
+            return next(new AppError('User already has a barbershop'));
+        }
+
         const { barbershop } = await crudBarbershopService.create({
             owner: user,
             name,
@@ -51,18 +59,18 @@ router.get('/:id', async (
     next: NextFunction,
 ) => {
     try {
-        const { id } = request.params;
+        const { id: barbershopId } = request.params;
 
         const crudBarbershopService = container.resolve(CrudBarbershopService);
-        const { barbershop } = await crudBarbershopService.retrieve({
-            id,
-        });
+        const {
+            barbershop: retrievedBarbershop,
+        } = await crudBarbershopService.retrieve({ id: barbershopId });
 
-        if (!barbershop) {
-            return response.status(404).json({ message: 'Not found' });
+        if (!retrievedBarbershop) {
+            return next(new AppError('Barbershop not found'));
         }
 
-        return response.status(200).json({ barbershop });
+        return response.status(200).json({ barbershop: retrievedBarbershop });
     } catch (error) {
         return next(error);
     }
@@ -88,6 +96,10 @@ router.put('/:id', identifyBarbershop, async (
         } = request.params;
 
         const { barbershop } = request;
+
+        if (!barbershop) {
+            return next(new AppError('Unauthorized', 401));
+        }
 
         if (barbershopId !== barbershop.id) {
             return next(new AppError('Unauthorized', 401));
@@ -128,6 +140,10 @@ router.delete('/:id', identifyBarbershop, async (
         } = request.params;
 
         const { barbershop } = request;
+
+        if (!barbershop) {
+            return next(new AppError('Unauthorized', 401));
+        }
 
         if (barbershopId !== barbershop.id) {
             return next(new AppError('Unauthorized', 401));

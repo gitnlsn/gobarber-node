@@ -27,14 +27,14 @@ class AppointmentsRepository extends AbstractRepository<Appointment> {
      * Finds entities that match given conditions.
      */
     async find(
-        options?:
-            FindConditions<Appointment>
-            | FindManyOptions<Appointment>
-            | undefined,
+        options?: FindManyOptions<Appointment>,
     ): Promise<Appointment[]> {
         return this.repository.find({
             ...options,
-            where: { status: In(['enabled', 'disabled']) },
+            where: {
+                ...options?.where as FindConditions<Appointment>,
+                status: In(['enabled', 'disabled']),
+            },
         });
     }
 

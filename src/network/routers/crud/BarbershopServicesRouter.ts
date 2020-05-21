@@ -37,6 +37,10 @@ router.post('/', IdentifyBarbershop, async (
 
         const { barbershop } = request;
 
+        if (!barbershop) {
+            return next(new AppError('Unauthorized', 401));
+        }
+
         if (barbershopId !== barbershop.id) {
             return next(new AppError('Unauthorized', 401));
         }
@@ -101,11 +105,24 @@ router.put('/enable/:id', IdentifyBarbershop, async (
             },
         } = request;
 
-        if (serviceId !== barbershop.id) {
+        if (!barbershop) {
             return next(new AppError('Unauthorized', 401));
         }
 
         const serviceVisibilityService = container.resolve(BarberServiceVisibilityService);
+        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
+
+        const { service: currentService } = await crudBarberServiceService.retrieve({
+            id: serviceId,
+        });
+
+        if (!currentService) {
+            return next(new AppError(`Service ${serviceId} does not exist`));
+        }
+
+        if (currentService.provider.id !== barbershop.id) {
+            return next(new AppError('Unauthorized', 401));
+        }
 
         const { service: updatedService } = await serviceVisibilityService.enable({
             id: serviceId,
@@ -130,11 +147,24 @@ router.put('/disable/:id', IdentifyBarbershop, async (
             },
         } = request;
 
-        if (serviceId !== barbershop.id) {
+        if (!barbershop) {
             return next(new AppError('Unauthorized', 401));
         }
 
         const serviceVisibilityService = container.resolve(BarberServiceVisibilityService);
+        const crudBarberServiceService = container.resolve(CrudBarberServiceService);
+
+        const { service: currentService } = await crudBarberServiceService.retrieve({
+            id: serviceId,
+        });
+
+        if (!currentService) {
+            return next(new AppError(`Service ${serviceId} does not exist`));
+        }
+
+        if (currentService.provider.id !== barbershop.id) {
+            return next(new AppError('Unauthorized', 401));
+        }
 
         const { service: updatedService } = await serviceVisibilityService.disable({
             id: serviceId,
@@ -158,6 +188,10 @@ router.put('/:id', IdentifyBarbershop, async (
                 id: serviceId,
             },
         } = request;
+
+        if (!barbershop) {
+            return next(new AppError('Unauthorized', 401));
+        }
 
         const crudBarberServiceService = container.resolve(CrudBarberServiceService);
         const crudServiceTypeService = container.resolve(CrudServiceTypeService);
@@ -227,6 +261,10 @@ router.delete('/:id', IdentifyBarbershop, async (
                 id: serviceId,
             },
         } = request;
+
+        if (!barbershop) {
+            return next(new AppError('Unauthorized', 401));
+        }
 
         const crudBarberServiceService = container.resolve(CrudBarberServiceService);
 

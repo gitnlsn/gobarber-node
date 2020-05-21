@@ -1,5 +1,10 @@
 import { inject, injectable } from 'tsyringe';
-import { FindConditions } from 'typeorm';
+import {
+    FindConditions,
+    Between,
+    MoreThanOrEqual,
+    LessThanOrEqual,
+} from 'typeorm';
 import BarberServicesRepository from '../../../database/repositories/BarberServiceRepository';
 import {
     CrudBarberServiceInterface,
@@ -9,7 +14,6 @@ import {
     UpdateBarberServiceOutput,
     DeleteBarberServiceInput,
     DeleteBarberServiceOutput,
-    RetrieveBarberServiceInput,
     RetrieveBarberServiceOutput,
     RetrieveAllBarberServiceInput,
     RetrieveAllBarberServiceOutput,
@@ -61,7 +65,9 @@ class CrudBarberServiceService implements CrudBarberServiceInterface {
         return { service: updatedService };
     }
 
-    async retrieve(conditions?: FindConditions<BarbershopService>): Promise<RetrieveBarberServiceOutput> {
+    async retrieve(
+        conditions?: FindConditions<BarbershopService>,
+    ): Promise<RetrieveBarberServiceOutput> {
         const existingService = await this.serviceRepo.findOne(
             conditions,
             { relations: ['provider', 'type'] },
@@ -72,14 +78,24 @@ class CrudBarberServiceService implements CrudBarberServiceInterface {
     async retrieveAll({
         provider,
         type,
+        price,
     }: RetrieveAllBarberServiceInput): Promise<RetrieveAllBarberServiceOutput> {
         const findOptions = {} as FindConditions<BarbershopService>;
 
         if (provider) findOptions.provider = provider;
         if (type) findOptions.type = type;
+        if (price) {
+            if (price.ge && price.le) {
+                findOptions.price = Between(price.ge, price.le);
+            } else if (price.ge) {
+                findOptions.price = MoreThanOrEqual(price.ge);
+            } else if (price.le) {
+                findOptions.price = LessThanOrEqual(price.le);
+            }
+        }
 
         const serviceList = await this.serviceRepo.find({
-            ...findOptions,
+            where: { ...findOptions },
             relations: ['provider', 'type'],
         });
         return { serviceList };

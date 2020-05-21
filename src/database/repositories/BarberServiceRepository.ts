@@ -27,14 +27,14 @@ class BarberServicesRepository extends AbstractRepository<BarbershopService> {
      * Finds entities that match given conditions.
      */
     async find(
-        options?:
-            FindConditions<BarbershopService>
-            | FindManyOptions<BarbershopService>
-            | undefined,
+        options?: FindManyOptions<BarbershopService>,
     ): Promise<BarbershopService[]> {
         return this.repository.find({
             ...options,
-            where: { status: In(['enabled', 'disabled']) },
+            where: {
+                ...options?.where as FindConditions<BarbershopService>,
+                status: In(['enabled', 'disabled']),
+            },
         });
     }
 

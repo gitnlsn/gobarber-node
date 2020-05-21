@@ -29,10 +29,10 @@ export interface RetrieveBarberServiceInput {
 export interface RetrieveAllBarberServiceInput {
     type: ServiceType;
     provider?: Barbershop;
-    price?: [{ /* TODO: FILTER */
-        comparison: 'ge' | 'le';
-        value: number;
-    }];
+    price?: {
+        ge? : number;
+        le? : number;
+    };
 }
 
 export interface CreateBarberServiceOutput {

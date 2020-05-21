@@ -23,7 +23,9 @@ router.get('/', async (
         const {
             barbershopId,
             serviceTypeId,
-        } = request.params;
+            priceMin,
+            priceMax,
+        } = request.query;
 
         const crudBarbershopService = container.resolve(CrudBarbershopService);
         const crudBarberServiceService = container.resolve(CrudBarberServiceService);
@@ -31,7 +33,7 @@ router.get('/', async (
 
         const retrieveOptions = {} as RetrieveAllBarberServiceInput;
 
-        if (barbershopId) {
+        if (typeof barbershopId === 'string') {
             const { barbershop } = await crudBarbershopService.retrieve({
                 id: barbershopId,
             });
@@ -42,7 +44,7 @@ router.get('/', async (
             retrieveOptions.provider = barbershop;
         }
 
-        if (serviceTypeId) {
+        if (typeof serviceTypeId === 'string') {
             const { serviceType } = await crudServiceTypeService.retrieve({
                 id: serviceTypeId,
             });
@@ -51,6 +53,16 @@ router.get('/', async (
                 return next(new AppError(`Provided ServiceType ${serviceTypeId} does not exist`));
             }
             retrieveOptions.type = serviceType;
+        }
+
+        if (priceMin || priceMax) {
+            retrieveOptions.price = {};
+            if (Number(priceMin)) {
+                retrieveOptions.price.ge = Number(priceMin);
+            }
+            if (Number(priceMax)) {
+                retrieveOptions.price.le = Number(priceMax);
+            }
         }
 
         const { serviceList } = await crudBarberServiceService.retrieveAll(retrieveOptions);

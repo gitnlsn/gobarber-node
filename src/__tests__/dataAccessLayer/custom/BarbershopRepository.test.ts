@@ -226,7 +226,7 @@ describe('Barbershop Repository', () => {
         expect(deletedShop?.name).toBe('New shop name');
 
         const deletedShopList = await shopRepository.find({
-            owner: { id: savedUser.id },
+            where: { owner: { id: savedUser.id } },
             relations: ['owner'],
         });
         expect(deletedShopList.length).toBe(1);
