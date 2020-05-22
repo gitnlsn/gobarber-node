@@ -3,11 +3,9 @@ import express from 'express';
 import { Connection, createConnection } from 'typeorm';
 
 import { createHash } from 'crypto';
-import registerRepositories from '../../../database/container';
 import { GoBarberServer } from '../../../app';
-import registerServices from '../../../services/container';
 
-describe('Sessions Router', () => {
+describe('Retriever Router to Barbershop Profiles', () => {
     let expressApp: express.Express;
     let connection: Connection;
 
@@ -15,10 +13,6 @@ describe('Sessions Router', () => {
 
     beforeAll(async () => {
         connection = await createConnection();
-        connection.runMigrations();
-
-        registerRepositories({ typeormConnection: connection });
-        registerServices();
 
         expressApp = await GoBarberServer({
             typeormConnection: connection,

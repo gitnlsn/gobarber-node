@@ -27,7 +27,7 @@ export interface RetrieveBarberServiceInput {
 }
 
 export interface RetrieveAllBarberServiceInput {
-    type: ServiceType;
+    type?: ServiceType;
     provider?: Barbershop;
     price?: {
         ge? : number;

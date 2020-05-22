@@ -3,13 +3,11 @@ import express from 'express';
 import { Connection, createConnection } from 'typeorm';
 
 import { createHash } from 'crypto';
-import registerRepositories from '../../../database/container';
 import { GoBarberServer } from '../../../app';
-import registerServices from '../../../services/container';
 import Barbershop from '../../../database/models/Barbershop';
 import ServiceType from '../../../database/models/ServiceType';
 
-describe('Sessions Router', () => {
+describe('Retriever Router to Barbershop Services', () => {
     let expressApp: express.Express;
     let connection: Connection;
 
@@ -24,10 +22,9 @@ describe('Sessions Router', () => {
 
     beforeAll(async () => {
         connection = await createConnection();
-        await connection.runMigrations();
-
-        registerRepositories({ typeormConnection: connection });
-        registerServices();
+        expressApp = await GoBarberServer({
+            typeormConnection: connection,
+        });
 
         /* Inserting serviceTypes manually since there is no designed route to create it */
         const serviceTypeRepository = connection.getRepository(ServiceType);
@@ -41,10 +38,6 @@ describe('Sessions Router', () => {
             title: 'Haircut - female',
             description: 'haircut for women',
             logoUrl: 'some female logo url',
-        });
-
-        expressApp = await GoBarberServer({
-            typeormConnection: connection,
         });
 
         const { body: { token: firstToken } } = await request(expressApp)

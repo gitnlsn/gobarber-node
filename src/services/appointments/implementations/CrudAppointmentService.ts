@@ -3,8 +3,10 @@ import {
     FindConditions,
     Not,
     IsNull,
-    MoreThan,
-    LessThan,
+    MoreThanOrEqual,
+    LessThanOrEqual,
+    FindManyOptions,
+    In,
 } from 'typeorm';
 
 import AppointmentsRepository from '../../../database/repositories/AppointmentsRepository';
@@ -32,6 +34,10 @@ import {
     RetrieveAllAppointmentOutput,
 } from '../interfaces/RetrieveAppointment';
 import Appointment from '../../../database/models/Appointment';
+import BarberServicesRepository from '../../../database/repositories/BarberServiceRepository';
+import BarbershopService from '../../../database/models/BarbershopService';
+import Barbershop from '../../../database/models/Barbershop';
+import ServiceType from '../../../database/models/ServiceType';
 
 @injectable()
 class CrudAppointmentService
@@ -42,6 +48,7 @@ implements
     RetrieveAppointmentInterface {
     constructor(
         @inject('AppointmentsRepository') private appointmentRepo: AppointmentsRepository,
+        @inject('BarberServicesRepository') private barberserviceRepo: BarberServicesRepository,
     ) { }
 
     async create(createProps: CreateAppointmentInput): Promise<CreateAppointmentOutput> {
@@ -98,41 +105,39 @@ implements
 
     async retrieveAll({
         available,
-        serviceId,
-        providerId,
-        serviceTypeId,
+        serviceList,
         period,
     }: RetrieveAllAppointmentInput): Promise<RetrieveAllAppointmentOutput> {
-        if (serviceId) {
-            const appointmentList = await this.appointmentRepo.find({
-                where: {
-                    service: { id: serviceId },
-                    client: available ? Not(IsNull()) : IsNull(),
-                    startsAt: MoreThan(period?.min),
-                    endsAt: LessThan(period?.max),
-                },
-                relations: ['messages', 'client', 'service', 'service.provider', 'service.type'],
-            });
-            return { appointmentList };
+        const options = {} as FindManyOptions<Appointment>;
+        options.relations = ['messages', 'client', 'service', 'service.provider', 'service.type'];
+        options.where = {};
+
+        switch (available) {
+        case true:
+            options.where.client = IsNull();
+            break;
+        case false:
+            options.where.client = Not(IsNull());
+            break;
+        case 'all':
+        default:
         }
 
-        if (providerId || serviceTypeId) {
-            const appointmentList = await this.appointmentRepo.find({
-                where: {
-                    service: {
-                        provider: providerId ? { id: providerId } : null,
-                        type: serviceId ? { id: serviceTypeId } : null,
-                    },
-                    client: available ? Not(IsNull()) : IsNull(),
-                    startsAt: MoreThan(period?.min),
-                    endsAt: LessThan(period?.max),
-                },
-                relations: ['messages', 'client', 'service', 'service.provider', 'service.type'],
-            });
-            return { appointmentList };
+        if (period) {
+            options.where.startsAt = MoreThanOrEqual(period.min);
+            options.where.endsAt = LessThanOrEqual(period.max);
         }
 
-        return { appointmentList: [] };
+        if (serviceList && serviceList.length > 0) {
+            options.where.service = In(serviceList.map((service) => service.id));
+        }
+
+        if (!Object.keys(options.where).length) {
+            delete options.where;
+        }
+
+        const retrievedAppointmentList = await this.appointmentRepo.find(options);
+        return { appointmentList: retrievedAppointmentList };
     }
 }
 

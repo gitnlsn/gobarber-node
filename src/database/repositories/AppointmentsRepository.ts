@@ -62,14 +62,19 @@ class AppointmentsRepository extends AbstractRepository<Appointment> {
         appointment: Appointment,
         options?: SaveOptions,
     ): Promise<Appointment> {
-        const existingAppointment = await this.repository.findOne({
-            where: {
-                owner: { id: appointment.id },
-                status: In(['enabled', 'disabled']),
-            },
-        });
+        /* user must provide service id for save to behave as update */
+        if (appointment.id) {
+            const existingAppointment = await this.repository.findOne({
+                where: {
+                    id: appointment.id,
+                    status: In(['enabled', 'disabled']),
+                },
+            });
 
-        if (existingAppointment) {
+            if (!existingAppointment) {
+                throw Error(`Appointment ${appointment.id} was provided, but no appointment was found in database`);
+            }
+
             return this.repository.save({
                 ...existingAppointment,
                 ...appointment,

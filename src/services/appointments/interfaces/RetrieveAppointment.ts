@@ -1,4 +1,7 @@
 import Appointment from '../../../database/models/Appointment';
+import ServiceType from '../../../database/models/ServiceType';
+import Barbershop from '../../../database/models/Barbershop';
+import BarbershopService from '../../../database/models/BarbershopService';
 
 export interface RetrieveAppointmentInput {
     id: string;
@@ -9,10 +12,8 @@ export interface RetrieveAppointmentOutput {
 }
 
 export interface RetrieveAllAppointmentInput {
-    available: boolean;
-    providerId?: string;
-    serviceTypeId?: string;
-    serviceId?: string;
+    available: 'all' | true | false;
+    serviceList?: BarbershopService[];
     period?: {
         min: Date;
         max: Date;
