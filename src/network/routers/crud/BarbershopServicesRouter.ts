@@ -238,10 +238,7 @@ router.put('/:id', IdentifyBarbershop, async (
             newService.type = newServiceType;
         }
 
-        const { service: updatedService } = await crudBarberServiceService.update({
-            id: serviceId,
-            ...newService,
-        });
+        const { service: updatedService } = await crudBarberServiceService.update(newService);
 
         return response.status(200).json({ service: updatedService });
     } catch (error) {

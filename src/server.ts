@@ -6,7 +6,7 @@ import database from './database';
 
 dotenv.config();
 
-if (process.env.VERBOSE) {
+if (process.env.VERBOSE === 'true') {
     console.log({
         NODE_PORT: process.env.NODE_PORT,
 
