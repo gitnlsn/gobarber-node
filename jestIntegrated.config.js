@@ -5,7 +5,7 @@ module.exports = {
     verbose: true,
 
     testRegex: [
-        '/__tests__/',
+        'src/__tests__/',
     ],
 
     maxConcurrency: 1,

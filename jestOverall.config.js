@@ -5,6 +5,10 @@ module.exports = {
     maxConcurrency: 1, /* integrated tests will touch the database */
     collectCoverage: true,
 
+    testRegex: [
+        '.test.ts',
+    ],
+
     coverageDirectory: 'jestCoverage/overall/',
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',

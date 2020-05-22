@@ -5,8 +5,6 @@ import {
 } from 'typeorm';
 
 import User from './models/User';
-import Barbershop from './models/Barbershop';
-import Appointment from './models/Appointment';
 import BarberServicesRepository from './repositories/BarberServiceRepository';
 import BarbershopsRepository from './repositories/BarbershopsRepository';
 import ServiceType from './models/ServiceType';
