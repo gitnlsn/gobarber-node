@@ -2,7 +2,7 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 class CreateUser1587142089048 implements MigrationInterface {
-    public async up(queryRunner: QueryRunner): Promise<any> {
+    public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 
         /**
@@ -36,7 +36,7 @@ class CreateUser1587142089048 implements MigrationInterface {
         }));
     }
 
-    public async down(queryRunner: QueryRunner): Promise<any> {
+    public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable('users');
     }
 }

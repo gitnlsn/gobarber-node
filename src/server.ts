@@ -20,17 +20,7 @@ if (process.env.VERBOSE === 'true') {
     });
 }
 
-createConnection({
-    name: 'postgres',
-    type: 'postgres',
-    host: process.env.POSTGRES_HOST as string | 'localhost',
-    port: process.env.POSTGRES_PORT ? Number(process.env.POSTGRES_PORT) : 5432,
-    username: process.env.POSTGRES_USERNAME as string | 'postgres',
-    password: process.env.POSTGRES_PASSWORD as string | 'postgres',
-    database: process.env.POSTGRES_DATABASE_NAME as string | 'gobarber_test',
-    entities: database.entities,
-    migrations: database.migrations,
-}).then((connection) => {
+createConnection(database.config).then((connection) => {
     GoBarberServer({ typeormConnection: connection }).then((app) => {
         app.listen(Number(process.env.NODE_PORT) || 3333, () => {
             console.log(`Listening at port ${process.env.NODE_PORT}`);
