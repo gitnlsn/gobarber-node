@@ -21,9 +21,12 @@ if (process.env.VERBOSE === 'true') {
 }
 
 createConnection(database.config).then((connection) => {
-    GoBarberServer({ typeormConnection: connection }).then((app) => {
+    GoBarberServer({
+        typeormConnection: connection,
+        forceHttps: true,
+    }).then((app) => {
         app.listen(Number(process.env.PORT), () => {
-            console.log(`Listening at port ${process.env.NODE_PORT}`);
+            console.log(`Listening at port ${process.env.PORT}`);
         });
     }).catch((error) => {
         console.error(error);

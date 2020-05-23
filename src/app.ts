@@ -14,10 +14,12 @@ import registerServices from './services/container';
 
 export interface GoBarberConfigs {
     typeormConnection: Connection;
+    forceHttps?: boolean;
 }
 
 export async function GoBarberServer({
     typeormConnection,
+    forceHttps,
 }: GoBarberConfigs): Promise<express.Express> {
     const app = express();
 
@@ -28,7 +30,7 @@ export async function GoBarberServer({
     registerRepositories({ typeormConnection });
     registerServices();
 
-    app.use(ForceHttpsMiddleware);
+    if (forceHttps) app.use(ForceHttpsMiddleware);
     app.use(express.json());
     app.use(cors());
 

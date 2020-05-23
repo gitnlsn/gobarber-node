@@ -12,8 +12,7 @@ import AuthenticateUserService from '../../services/user/implementations/Authent
 import ValidateTokenService from '../../services/user/implementations/ValidateTokenService';
 import ResetPasswordService from '../../services/user/implementations/ResetPasswordService';
 import ForgotPasswordService from '../../services/user/implementations/ForgotPasswordService';
-import SendGridService from '../../services/external/email/SendGridService';
-import AppError from '../../errors/AppError';
+import MailjetService from '../../services/external/email/MailjetService';
 
 const routes = Router();
 
@@ -98,26 +97,37 @@ routes.post('/password/forgot', async (
         const { email } = request.body;
 
         const forgotService = container.resolve(ForgotPasswordService);
-        const apiKey = process.env.SENDGRID_API_KEY;
+        const jet = container.resolve(MailjetService);
+        const emailSender = container.resolve<string>('MAILJET_SENDER_EMAIL');
+        const appDomainName = container.resolve<string>('APPLICATION_DOMAIN_NAME');
 
-        if (!apiKey) {
-            console.error('SendGrid service misses api key configuration');
-            return next(new AppError('Failed to send email'));
-        }
+        const {
+            token: resetPasswordToken,
+            user,
+        } = await forgotService.execute({ email });
 
-        const mailService = new SendGridService(apiKey);
-
-        const { token: resetPasswordToken } = await forgotService.execute({
-            email,
-        });
-
-        mailService.sendMail({
-            to: email,
-            message: `link to reset password ${resetPasswordToken}`,
-            subject: 'Reset Password',
-            from: 'admin@mail.com',
-        }).catch((rejectError) => {
-            console.warn(rejectError);
+        const link = `https://${appDomainName}/client/password/reset?token=${resetPasswordToken}`;
+        jet.sendMail({
+            from: {
+                email: emailSender,
+                name: 'Reset Password',
+            },
+            to: {
+                email: user.email,
+                name: user.name,
+            },
+            subject: 'Password Reset Link',
+            message: {
+                text: link,
+                html: `<a href="${link}">${link}</a>`,
+            },
+        }).then((mailResponse) => {
+            console.log(
+                'Email was sent successfully',
+                (mailResponse.data as any).Messages[0].To[0],
+            );
+        }).catch((err) => {
+            console.error(err);
         });
 
         return response.status(200).json({

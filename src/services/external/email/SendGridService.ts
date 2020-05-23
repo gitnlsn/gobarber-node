@@ -25,10 +25,10 @@ class SendGridService implements EmailServiceInterface {
         sendgrid.setApiKey(this.apiKey);
 
         const response = await sendgrid.send({
-            from,
+            from: from.email,
             subject,
-            to,
-            text: message,
+            to: to.email,
+            text: message.text,
         } as sendgrid.MailDataRequired);
 
         const [{

@@ -1,8 +1,17 @@
 export interface MailData {
     subject: string;
-    message: string;
-    to: string;
-    from: string;
+    message: {
+        text: string;
+        html?: string;
+    };
+    to: {
+        name?: string;
+        email: string;
+    };
+    from: {
+        name?: string;
+        email: string;
+    };
 }
 
 export interface SendMailResult {

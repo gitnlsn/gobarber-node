@@ -1,8 +1,8 @@
 import request from 'supertest';
-import express, { Response } from 'express';
+import express from 'express';
 import { Connection, createConnection } from 'typeorm';
 import { createHash } from 'crypto';
-import sendgrid from '@sendgrid/mail';
+import mailjet from 'node-mailjet';
 
 import { container } from 'tsyringe';
 import registerRepositories from '../../database/container';
@@ -16,7 +16,12 @@ describe('Sessions Router', () => {
 
     beforeAll(async () => {
         connection = await createConnection();
-        connection.runMigrations();
+        await connection.runMigrations();
+
+        process.env.MAILJET_APIKEY_PUBLIC = 'public key';
+        process.env.MAILJET_APIKEY_PRIVATE = 'private key';
+        process.env.APPLICATION_DOMAIN_NAME = 'app.domain.com';
+        process.env.MAILJET_SENDER_EMAIL = 'testing@gobarber.com';
 
         registerRepositories({ typeormConnection: connection });
         registerServices();
@@ -100,10 +105,33 @@ describe('Sessions Router', () => {
 
         /* Temporary mocking to SendGrid */
         process.env.SENDGRID_API_KEY = 'key';
-        const setKeyMock = jest.spyOn(sendgrid, 'setApiKey') as jest.SpyInstance;
-        const sendMock = jest.spyOn(sendgrid, 'send') as jest.SpyInstance;
-        setKeyMock.mockImplementation((key) => key);
-        sendMock.mockImplementation(async () => ([{ statusCode: 200 } as Response]));
+        const setKeyMock = jest.spyOn(mailjet, 'connect') as jest.SpyInstance;
+        const jetPostResponse = {
+            request: jest.fn(async (foo) => ({
+                body: {
+                    Messages: [{
+                        Status: 'success',
+                        To: [{
+                            Email: 'john@mail.com',
+                            MessageUUID: '123',
+                            MessageID: 456,
+                            MessageHref: 'https://api.mailjet.com/v3/message/456',
+                        }],
+                        Bcc: [],
+                        Cc: [],
+                        CustomID: 'some id',
+                    }],
+                },
+            } as mailjet.Email.PostResponse)),
+            action: jest.fn(),
+            id: jest.fn(),
+        } as mailjet.Email.PostResource;
+        const jetMock = {
+            post: jest.fn(() => jetPostResponse),
+            get: jest.fn(),
+            put: jest.fn(),
+        } as mailjet.Email.Client;
+        setKeyMock.mockImplementation((pubKey, privKey) => jetMock);
 
         const forgotPasswordResponse = await request(expressApp)
             .post('/user/password/forgot')
@@ -114,11 +142,18 @@ describe('Sessions Router', () => {
         expect(forgotPasswordResponse.status).toBe(200);
         expect(forgotPasswordResponse.body).toHaveProperty('message');
 
-        expect(sendMock).toHaveBeenCalledTimes(1);
-        expect(sendMock).toHaveBeenCalledWith(
+        expect(jetMock.post).toHaveBeenCalledTimes(1);
+        expect(jetPostResponse.request).toHaveBeenCalledTimes(1);
+        expect(jetPostResponse.request).toHaveBeenCalledWith(
             expect.objectContaining({
-                to: 'john@mail.com',
-                subject: 'Reset Password',
+                Messages: expect.arrayContaining([
+                    expect.objectContaining({
+                        To: expect.arrayContaining([expect.objectContaining({
+                            Email: 'john@mail.com',
+                        })]),
+                        Subject: 'Password Reset Link',
+                    }),
+                ]),
             }),
         );
 

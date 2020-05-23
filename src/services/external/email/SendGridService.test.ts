@@ -25,9 +25,9 @@ describe('SendGrid Mail Service', () => {
     it('Should call \'sendgrid.send\' with mail props', async () => {
         const mailService = new SendGridService('key');
         await mailService.sendMail({
-            from: 'sender@mail.com',
-            to: 'receiver@mail.com',
-            message: 'hello receiver',
+            from: { email: 'sender@mail.com' },
+            to: { email: 'receiver@mail.com' },
+            message: { text: 'hello receiver' },
             subject: 'testing message',
         });
 
@@ -43,9 +43,9 @@ describe('SendGrid Mail Service', () => {
     it('Should call \'sendgrid.setApiKey\' with injected key', async () => {
         const mailService = new SendGridService('key');
         await mailService.sendMail({
-            from: 'sender@mail.com',
-            to: 'receiver@mail.com',
-            message: 'hello receiver',
+            from: { email: 'sender@mail.com' },
+            to: { email: 'receiver@mail.com' },
+            message: { text: 'hello receiver' },
             subject: 'testing message',
         });
 
@@ -55,9 +55,9 @@ describe('SendGrid Mail Service', () => {
         sendMock.mockResolvedValueOnce(([{ statusCode: 201 } as Response]));
         const mailService = new SendGridService('key');
         const { status } = await mailService.sendMail({
-            from: 'sender@mail.com',
-            to: 'receiver@mail.com',
-            message: 'hello receiver',
+            from: { email: 'sender@mail.com' },
+            to: { email: 'receiver@mail.com' },
+            message: { text: 'hello receiver' },
             subject: 'testing message',
         });
 
@@ -68,9 +68,9 @@ describe('SendGrid Mail Service', () => {
         const mailService = new SendGridService('key');
         await expect(
             mailService.sendMail({
-                from: 'sender@mail.com',
-                to: 'receiver@mail.com',
-                message: 'hello receiver',
+                from: { email: 'sender@mail.com' },
+                to: { email: 'receiver@mail.com' },
+                message: { text: 'hello receiver' },
                 subject: 'testing message',
             }),
         ).rejects.toThrow();
