@@ -7,6 +7,7 @@ import cors from 'cors';
 import routes from './network/routers';
 import errorMidleware from './errors/AppErrorMiddleware';
 import AuthenticateMiddleware from './network/middlewares/AuthenticateMiddleware';
+import ForceHttpsMiddleware from './network/middlewares/ForceHttpsMiddleware';
 
 import registerRepositories from './database/container';
 import registerServices from './services/container';
@@ -27,6 +28,7 @@ export async function GoBarberServer({
     registerRepositories({ typeormConnection });
     registerServices();
 
+    app.use(ForceHttpsMiddleware);
     app.use(express.json());
     app.use(cors());
 
