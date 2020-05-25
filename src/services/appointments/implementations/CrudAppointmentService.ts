@@ -35,9 +35,6 @@ import {
 } from '../interfaces/RetrieveAppointment';
 import Appointment from '../../../database/models/Appointment';
 import BarberServicesRepository from '../../../database/repositories/BarberServiceRepository';
-import BarbershopService from '../../../database/models/BarbershopService';
-import Barbershop from '../../../database/models/Barbershop';
-import ServiceType from '../../../database/models/ServiceType';
 
 @injectable()
 class CrudAppointmentService

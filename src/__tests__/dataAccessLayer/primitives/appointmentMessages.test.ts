@@ -74,6 +74,7 @@ describe('Barbershop data access', () => {
             const service = barbershopServiceRepository.create();
             service.type = serviceType;
             service.provider = barbershop;
+            service.title = 'My First Haircut';
             service.description = 'Simple Haircut';
             service.logoUrl = 'custom logo to haircut';
             service.price = 5000; /* R$50,00 */
@@ -81,7 +82,6 @@ describe('Barbershop data access', () => {
             await barbershopServiceRepository.save(service);
 
             const firstAppointment = appointmentsRepository.create();
-            firstAppointment.title = 'First haircut';
             firstAppointment.service = service;
             firstAppointment.client = client;
             firstAppointment.observations = 'My hair like crazy';
@@ -137,6 +137,7 @@ describe('Barbershop data access', () => {
 
             const service = barbershopServiceRepository.create();
             service.type = serviceType;
+            service.title = 'My First Haircut service';
             service.provider = barbershop;
             service.description = 'Simple Haircut';
             service.logoUrl = 'custom logo to haircut';
@@ -145,7 +146,6 @@ describe('Barbershop data access', () => {
             await barbershopServiceRepository.save(service);
 
             const firstAppointment = appointmentsRepository.create();
-            firstAppointment.title = 'First haircut';
             firstAppointment.service = service;
             firstAppointment.client = client;
             firstAppointment.observations = 'My hair like crazy';

@@ -6,6 +6,7 @@ export interface CreateBarberServiceInput {
     type: ServiceType;
     provider: Barbershop;
     price: number;
+    title?: string;
     description?: string;
     logoUrl?: string;
 }
@@ -13,6 +14,7 @@ export interface CreateBarberServiceInput {
 export interface UpdateBarberServiceInput {
     id: string;
     serviceType?: ServiceType;
+    title?: string;
     description?: string;
     price?: number;
     logoUrl?: string;

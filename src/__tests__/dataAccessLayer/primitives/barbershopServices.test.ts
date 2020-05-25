@@ -68,6 +68,7 @@ describe('Barbershop data access', () => {
             const service = barbershopServiceRepository.create();
             service.type = serviceType;
             service.provider = barbershop;
+            service.title = 'Haircut 1';
             service.description = 'Simple Haircut';
             service.logoUrl = 'custom logo to haircut';
             service.price = 5000; /* R$50,00 */
@@ -77,7 +78,8 @@ describe('Barbershop data access', () => {
             expect(service).toHaveProperty('id');
             expect(service).toHaveProperty('price', 5000);
             expect(service).toHaveProperty('status', 'enabled');
-            expect(service).toHaveProperty('description');
+            expect(service).toHaveProperty('title', 'Haircut 1');
+            expect(service).toHaveProperty('description', 'Simple Haircut');
 
             expect(service.provider.id).toBe(barbershop.id);
             expect(service.type.id).toBe(serviceType.id);

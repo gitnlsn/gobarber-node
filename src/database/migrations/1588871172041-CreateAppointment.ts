@@ -18,12 +18,6 @@ class CreateAppointment1588871172041 implements MigrationInterface {
                         default: 'uuid_generate_v4()',
                     },
                     {
-                        /* A description to the appointment */
-                        name: 'title',
-                        type: 'varchar',
-                        isNullable: true,
-                    },
-                    {
                         /* points to users: client chooses an appointment */
                         name: 'user_id',
                         type: 'uuid',

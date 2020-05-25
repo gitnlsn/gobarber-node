@@ -3,7 +3,6 @@ import User from '../../../database/models/User';
 
 export interface UpdateAppointmentInput {
     id: string;
-    title?: string; /* may be copied from serviceType name */
     observations?: string; /* may be null */
     startsAt?: Date;
     endsAt?: Date;

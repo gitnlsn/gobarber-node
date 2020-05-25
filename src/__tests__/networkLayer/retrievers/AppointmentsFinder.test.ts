@@ -8,6 +8,7 @@ import { GoBarberServer } from '../../../app';
 import Barbershop from '../../../database/models/Barbershop';
 import ServiceType from '../../../database/models/ServiceType';
 import BarbershopService from '../../../database/models/BarbershopService';
+import Appointment from '../../../database/models/Appointment';
 
 describe('Retriever Router to Appointments', () => {
     let expressApp: express.Express;
@@ -26,8 +27,11 @@ describe('Retriever Router to Appointments', () => {
 
     let clientToken: string;
 
+    const createdAppointmentList: Appointment[] = [];
+
     beforeAll(async () => {
         connection = await createConnection();
+
         expressApp = await GoBarberServer({
             typeormConnection: connection,
         });
@@ -153,77 +157,83 @@ describe('Retriever Router to Appointments', () => {
             });
 
         /* Creating appointments */
-        await request(expressApp)
+        const { body: { appointment: createdAppointment1 } } = await request(expressApp)
             .post('/barbershop/appointment')
             .set('Authorization', `Bearer ${barbershopToken}`)
             .send({
                 appointment: {
-                    title: 'Short haircut 1 period',
                     startsAt: new Date('2020-05-20T16:00:00.000Z'), /* first appointment */
                     endsAt: new Date('2020-05-20T17:00:00.000Z'),
                     service: service1,
                 },
             });
 
-        await request(expressApp)
+        createdAppointmentList.push(createdAppointment1);
+
+        const { body: { appointment: createdAppointment2 } } = await request(expressApp)
             .post('/barbershop/appointment')
             .set('Authorization', `Bearer ${barbershopToken}`)
             .send({
                 appointment: {
-                    title: 'Short Haircut 2 period',
                     startsAt: new Date('2020-05-20T17:00:00.000Z'), /* 1 hour later */
                     endsAt: new Date('2020-05-20T18:00:00.000Z'),
                     service: service1,
                 },
             });
 
-        await request(expressApp)
+        createdAppointmentList.push(createdAppointment2);
+
+        const { body: { appointment: createdAppointment3 } } = await request(expressApp)
             .post('/barbershop/appointment')
             .set('Authorization', `Bearer ${barbershopToken}`)
             .send({
                 appointment: {
-                    title: 'Long haircut 1 period',
                     startsAt: new Date('2020-05-21T16:00:00.000Z'), /* 1 day later */
                     endsAt: new Date('2020-05-21T17:00:00.000Z'),
                     service: service2,
                 },
             });
 
-        await request(expressApp)
+        createdAppointmentList.push(createdAppointment3);
+
+        const { body: { appointment: createdAppointment4 } } = await request(expressApp)
             .post('/barbershop/appointment')
             .set('Authorization', `Bearer ${barbershopToken}`)
             .send({
                 appointment: {
-                    title: 'Long Haircut 2 period',
                     startsAt: new Date('2020-05-21T17:00:00.000Z'), /* 1 day + 1 hour later */
                     endsAt: new Date('2020-05-21T18:00:00.000Z'),
                     service: service2,
                 },
             });
 
-        await request(expressApp)
+        createdAppointmentList.push(createdAppointment4);
+
+        const { body: { appointment: createdAppointment5 } } = await request(expressApp)
             .post('/barbershop/appointment')
             .set('Authorization', `Bearer ${anotherBarbershopToken}`) /* other barbershop */
             .send({
                 appointment: {
-                    title: 'Short styled Haircut 1 period',
                     startsAt: new Date('2020-05-20T16:00:00.000Z'), /* same first datetime */
                     endsAt: new Date('2020-05-20T17:00:00.000Z'),
                     service: service3,
                 },
             });
 
+        createdAppointmentList.push(createdAppointment5);
+
         const { body: { appointment: appointmentToAccept } } = await request(expressApp)
             .post('/barbershop/appointment')
             .set('Authorization', `Bearer ${anotherBarbershopToken}`)
             .send({
                 appointment: {
-                    title: 'Long styled Haircut 2 period',
                     startsAt: new Date('2020-05-20T17:00:00.000Z'), /* 1 hour later */
                     endsAt: new Date('2020-05-20T18:00:00.000Z'),
                     service: service4,
                 },
             });
+
+        createdAppointmentList.push(appointmentToAccept);
 
         /* User accepts appointment */
         await request(expressApp)
@@ -249,12 +259,12 @@ describe('Retriever Router to Appointments', () => {
 
             expect(Array.isArray(appointmentList)).toBeTruthy();
             expect(appointmentList.length).toBe(6);
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short Haircut 2 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long Haircut 2 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short styled Haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long styled Haircut 2 period' }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[0].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[1].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[2].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[3].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[4].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[5].id }));
         });
     });
 
@@ -268,10 +278,10 @@ describe('Retriever Router to Appointments', () => {
 
             expect(Array.isArray(appointmentList)).toBeTruthy();
             expect(appointmentList.length).toBe(4);
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short Haircut 2 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short styled Haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long styled Haircut 2 period' }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[0].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[1].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[4].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[5].id }));
         });
         test('GET "/appointments?avaliable=true" filters accepted appointments', async () => {
             const response = await request(expressApp)
@@ -282,12 +292,11 @@ describe('Retriever Router to Appointments', () => {
 
             expect(Array.isArray(appointmentList)).toBeTruthy();
             expect(appointmentList.length).toBe(5);
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short Haircut 2 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long Haircut 2 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short styled Haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long styled Haircut 2 period' }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[0].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[1].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[2].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[3].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[4].id }));
         });
         test('GET "/appointments?avaliable=false" filters available appointments', async () => {
             const response = await request(expressApp)
@@ -298,12 +307,7 @@ describe('Retriever Router to Appointments', () => {
 
             expect(Array.isArray(appointmentList)).toBeTruthy();
             expect(appointmentList.length).toBe(1);
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short Haircut 2 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long Haircut 2 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short styled Haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long styled Haircut 2 period' }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[5].id }));
         });
         test('GET "/appointments?serviceId=:id" filters available appointments', async () => {
             const response = await request(expressApp)
@@ -314,12 +318,8 @@ describe('Retriever Router to Appointments', () => {
 
             expect(Array.isArray(appointmentList)).toBeTruthy();
             expect(appointmentList.length).toBe(2);
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short Haircut 2 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long Haircut 2 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short styled Haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long styled Haircut 2 period' }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[2].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[3].id }));
         });
         test('GET "/appointments?providerId=:id" filters available appointments', async () => {
             const response = await request(expressApp)
@@ -330,12 +330,10 @@ describe('Retriever Router to Appointments', () => {
 
             expect(Array.isArray(appointmentList)).toBeTruthy();
             expect(appointmentList.length).toBe(4);
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short Haircut 2 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long Haircut 2 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short styled Haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long styled Haircut 2 period' }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[0].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[1].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[2].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[3].id }));
         });
         test('GET "/appointments?serviceTypeId=:id" filters available appointments', async () => {
             const response = await request(expressApp)
@@ -346,12 +344,9 @@ describe('Retriever Router to Appointments', () => {
 
             expect(Array.isArray(appointmentList)).toBeTruthy();
             expect(appointmentList.length).toBe(3);
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short Haircut 2 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long Haircut 2 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short styled Haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long styled Haircut 2 period' }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[0].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[1].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[4].id }));
         });
         test('GET "/appointments?serviceTypeId=:typeId&providerId=:shopId" filters available appointments', async () => {
             const response = await request(expressApp)
@@ -362,12 +357,8 @@ describe('Retriever Router to Appointments', () => {
 
             expect(Array.isArray(appointmentList)).toBeTruthy();
             expect(appointmentList.length).toBe(2);
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short haircut 1 period' }));
-            expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short Haircut 2 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long Haircut 2 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Short styled Haircut 1 period' }));
-            // expect(appointmentList).toContainEqual(expect.objectContaining({ title: 'Long styled Haircut 2 period' }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[0].id }));
+            expect(appointmentList).toContainEqual(expect.objectContaining({ id: createdAppointmentList[1].id }));
         });
     });
 });

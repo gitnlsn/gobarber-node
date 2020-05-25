@@ -30,6 +30,7 @@ router.post('/', IdentifyBarbershop, async (
                 provider: {
                     id: barbershopId,
                 },
+                title,
                 description,
                 logoUrl,
             },
@@ -64,6 +65,7 @@ router.post('/', IdentifyBarbershop, async (
             provider: barbershop,
             price,
             type: serviceType,
+            title,
             description,
             logoUrl,
         });
@@ -214,6 +216,7 @@ router.put('/:id', IdentifyBarbershop, async (
                 type: {
                     id: newServiceTypeId,
                 },
+                title: newTitle,
                 description: newDescription,
                 logo: newLogo,
             },
@@ -226,6 +229,7 @@ router.put('/:id', IdentifyBarbershop, async (
         /* Compose new service to update */
         const newService = { ...currentService, logoUrl: undefined };
         if (newDescription) newService.description = newDescription;
+        if (newTitle) newService.title = newTitle;
         if (newPrice) newService.price = newPrice;
         if (newLogo) newService.logoUrl = newLogo;
         if (newServiceTypeId) {

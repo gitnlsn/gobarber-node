@@ -3,7 +3,6 @@ import Appointment from '../../../database/models/Appointment';
 
 export interface CreateAppointmentInput {
     service: BarbershopService;
-    title?: string; /* may be copied from serviceType name */
     observations?: string; /* may be null */
     startsAt: Date;
     endsAt: Date;

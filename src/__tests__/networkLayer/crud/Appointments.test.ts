@@ -33,6 +33,10 @@ describe('Appointments Router', () => {
     beforeAll(async () => {
         connection = await createConnection();
 
+        expressApp = await GoBarberServer({
+            typeormConnection: connection,
+        });
+
         /* Inserting serviceTypes manually since there is no designed route to create it */
         const serviceTypeRepository = connection.getRepository(ServiceType);
         availableServiceType = await serviceTypeRepository.save({
@@ -45,10 +49,6 @@ describe('Appointments Router', () => {
             title: 'Haircut - female',
             description: 'haircut for women',
             logoUrl: 'some female logo url',
-        });
-
-        expressApp = await GoBarberServer({
-            typeormConnection: connection,
         });
 
         const { body: { token: firstToken, user: firstUser } } = await request(expressApp)
@@ -148,7 +148,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -159,7 +158,6 @@ describe('Appointments Router', () => {
 
                 const { appointment: createdAppointment } = response.body;
                 expect(createdAppointment).toHaveProperty('id');
-                expect(createdAppointment).toHaveProperty('title', 'Haircut');
                 expect(createdAppointment).toHaveProperty('startsAt', '2020-05-20T16:00:00.000Z');
                 expect(createdAppointment).toHaveProperty('endsAt', '2020-05-20T17:00:00.000Z');
                 expect(createdAppointment).toHaveProperty('service');
@@ -171,7 +169,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -183,7 +180,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut with new time',
                             startsAt: new Date('2020-05-20T17:00:00.000Z'),
                             endsAt: new Date('2020-05-20T18:00:00.000Z'),
                             observations: 'some observation',
@@ -194,7 +190,6 @@ describe('Appointments Router', () => {
 
                 const { appointment: updatedAppointment } = response.body;
                 expect(updatedAppointment).toHaveProperty('id', createdAppointment.id);
-                expect(updatedAppointment).toHaveProperty('title', 'Haircut with new time');
                 expect(updatedAppointment).toHaveProperty('startsAt', '2020-05-20T17:00:00.000Z');
                 expect(updatedAppointment).toHaveProperty('endsAt', '2020-05-20T18:00:00.000Z');
                 expect(updatedAppointment).toHaveProperty('observations', 'some observation');
@@ -205,7 +200,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -220,7 +214,6 @@ describe('Appointments Router', () => {
 
                 const { appointment: retrievedAppointment } = response.body;
                 expect(retrievedAppointment).toHaveProperty('id', createdAppointment.id);
-                expect(retrievedAppointment).toHaveProperty('title', 'Haircut');
                 expect(retrievedAppointment).toHaveProperty('startsAt', '2020-05-20T16:00:00.000Z');
                 expect(retrievedAppointment).toHaveProperty('endsAt', '2020-05-20T17:00:00.000Z');
                 expect(retrievedAppointment).toHaveProperty('client');
@@ -234,7 +227,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -259,7 +251,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -283,7 +274,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -313,7 +303,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -342,7 +331,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${clientToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -358,7 +346,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -370,7 +357,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${clientToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -386,7 +372,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -408,7 +393,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${anotherBarbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -424,7 +408,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -436,7 +419,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${anotherBarbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'bla',
                             startsAt: new Date('2021-05-20T16:00:00.000Z'),
                             endsAt: new Date('2021-05-20T17:00:00.000Z'),
                             observations: 'uow',
@@ -452,7 +434,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -474,7 +455,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -498,7 +478,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,
@@ -522,7 +501,6 @@ describe('Appointments Router', () => {
                     .set('Authorization', `Bearer ${barbershopToken}`)
                     .send({
                         appointment: {
-                            title: 'Haircut',
                             startsAt: new Date('2020-05-20T16:00:00.000Z'),
                             endsAt: new Date('2020-05-20T17:00:00.000Z'),
                             service: registeredService,

@@ -59,6 +59,7 @@ describe('Barbershop data access', () => {
 
             const service = barbershopServiceRepository.create();
             service.type = serviceType;
+            service.title = 'First haircut';
             service.provider = barbershop;
             service.description = 'Simple Haircut';
             service.logoUrl = 'custom logo to haircut';
@@ -67,7 +68,6 @@ describe('Barbershop data access', () => {
             await barbershopServiceRepository.save(service);
 
             const firstAppointment = appointmentsRepository.create();
-            firstAppointment.title = 'First haircut';
             firstAppointment.service = service;
             firstAppointment.observations = 'None';
             firstAppointment.startsAt = new Date('2020-05-24 15:00');
@@ -75,7 +75,6 @@ describe('Barbershop data access', () => {
             await appointmentsRepository.save(firstAppointment);
 
             expect(firstAppointment).toHaveProperty('id');
-            expect(firstAppointment).toHaveProperty('title');
             expect(firstAppointment).toHaveProperty('observations');
             expect(firstAppointment).toHaveProperty('startsAt', new Date('2020-05-24 15:00'));
             expect(firstAppointment).toHaveProperty('endsAt', new Date('2020-05-24 16:00'));
@@ -107,6 +106,7 @@ describe('Barbershop data access', () => {
             const service = barbershopServiceRepository.create();
             service.type = serviceType;
             service.provider = barbershop;
+            service.title = 'First haircut';
             service.description = 'Simple Haircut';
             service.logoUrl = 'custom logo to haircut';
             service.price = 5000; /* R$50,00 */
@@ -114,7 +114,6 @@ describe('Barbershop data access', () => {
             await barbershopServiceRepository.save(service);
 
             const firstAppointment = appointmentsRepository.create();
-            firstAppointment.title = 'First haircut';
             firstAppointment.service = service;
             firstAppointment.observations = 'None';
             firstAppointment.startsAt = new Date('2020-05-24 15:00');

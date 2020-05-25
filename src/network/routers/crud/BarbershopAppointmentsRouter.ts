@@ -21,7 +21,6 @@ router.post('/', identifyBarbershop, async (
     try {
         const {
             appointment: {
-                title,
                 service: { id: serviceId },
                 startsAt,
                 endsAt,
@@ -51,7 +50,6 @@ router.post('/', identifyBarbershop, async (
 
         const { appointment } = await crudAppointmentService.create({
             service,
-            title,
             startsAt,
             endsAt,
         });

@@ -27,14 +27,17 @@ class BarbershopService {
     @OneToMany(() => Appointment, (appointment) => appointment.service)
     appointments: Appointment[];
 
+    @Column('varchar')
+    title: string;
+
+    @Column('varchar')
+    description: string;
+
     @Column('int')
     price: number;
 
     @Column('varchar', { name: 'logo_url' })
     logoUrl: string | null;
-
-    @Column('varchar')
-    description: string;
 
     @Column('varchar')
     status: 'enabled' | 'disabled' | 'deleted';

@@ -122,6 +122,7 @@ describe('Sessions Router', () => {
                             provider: registeredBarbershop,
                             type: availableServiceType,
                             price: 5000,
+                            title: 'Haircut 1',
                             description: 'johns amazing haircut',
                             logoUrl: 'custom logo',
                         },
@@ -135,6 +136,7 @@ describe('Sessions Router', () => {
                 expect(createdService).toHaveProperty('provider');
                 expect(createdService).toHaveProperty('type');
                 expect(createdService).toHaveProperty('price', 5000);
+                expect(createdService).toHaveProperty('title', 'Haircut 1');
                 expect(createdService).toHaveProperty('description', 'johns amazing haircut');
                 expect(createdService).toHaveProperty('logoUrl', 'custom logo');
 
@@ -162,6 +164,7 @@ describe('Sessions Router', () => {
                     .send({
                         service: {
                             provider: registeredBarbershop,
+                            title: 'Haircut 1',
                             type: anotherAvailableServiceType,
                             price: 6000,
                         },
@@ -173,6 +176,7 @@ describe('Sessions Router', () => {
                 const { body: { service: updatedService } } = response;
 
                 expect(updatedService).toHaveProperty('id');
+                expect(updatedService).toHaveProperty('title', 'Haircut 1');
                 expect(updatedService).toHaveProperty('type');
                 expect(updatedService.type).toHaveProperty('id', anotherAvailableServiceType.id);
             });

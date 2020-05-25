@@ -59,18 +59,24 @@ class CreateBarberService1588859999789 implements MigrationInterface {
                         type: 'uuid',
                     },
                     {
-                        name: 'price',
-                        type: 'int',
-                    },
-                    {
-                        /* user may override logo to be displayed */
-                        name: 'logo_url',
+                        /* A description to the appointment */
+                        name: 'title',
                         type: 'varchar',
                         isNullable: true,
                     },
                     {
                         /* user may override description to be displayed */
                         name: 'description',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'price',
+                        type: 'int',
+                    },
+                    {
+                        /* user may override logo to be displayed */
+                        name: 'logo_url',
                         type: 'varchar',
                         isNullable: true,
                     },

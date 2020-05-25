@@ -150,7 +150,6 @@ describe('Managing a Barbershop', () => {
             service,
             startsAt: new Date(2020, 6, 10, 15),
             endsAt: new Date(2020, 6, 10, 16),
-            title: 'haircut',
         });
 
         const [storedAppointment] = await connection.query(`
@@ -159,7 +158,6 @@ describe('Managing a Barbershop', () => {
             where service_id = '${service.id}';
         `);
 
-        expect(storedAppointment).toHaveProperty('title', appointment.title);
         expect(storedAppointment).toHaveProperty('starts_at', appointment.startsAt);
         expect(storedAppointment).toHaveProperty('ends_at', appointment.endsAt);
         expect(storedAppointment).toHaveProperty('user_id', null);
@@ -194,7 +192,6 @@ describe('Managing a Barbershop', () => {
             service,
             startsAt: new Date(2020, 6, 10, 15),
             endsAt: new Date(2020, 6, 10, 16),
-            title: 'haircut',
         });
 
         const { user: client } = await registerUserService.execute({
@@ -214,7 +211,6 @@ describe('Managing a Barbershop', () => {
             where service_id = '${service.id}';
         `);
 
-        expect(updatedAppointment).toHaveProperty('title', appointment.title);
         expect(updatedAppointment).toHaveProperty('starts_at', appointment.startsAt);
         expect(updatedAppointment).toHaveProperty('ends_at', appointment.endsAt);
         expect(updatedAppointment).toHaveProperty('user_id', client.id);

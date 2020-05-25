@@ -17,9 +17,6 @@ class Appointment {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column('varchar')
-    title: string;
-
     /* client may have many appointments */
     @ManyToOne(() => User, (user) => user.appointments)
     @JoinColumn({ name: 'user_id' })
