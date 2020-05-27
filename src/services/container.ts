@@ -17,7 +17,7 @@ function registerServices(): void {
     */
     container.register<string>(
         'jwtSignKey',
-        { useValue: newBytesWord(512) },
+        { useValue: process.env.JWT_SIGN_KEY as string },
     );
 
     container.register<string>(
