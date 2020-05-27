@@ -3,14 +3,10 @@
 <p align="center" >
 
 <img src="https://img.shields.io/badge/language-typescript-blue.svg" />
-
-<img src="https://img.shields.io/codecov/c/github/nelsonatgithub/gobarber-node/dev.svg" />
-
-<img src="https://img.shields.io/uptimerobot/status/m785050959-a43c5e69985219f6805d7f57.svg" />
-
-<img src="https://img.shields.io/uptimerobot/ratio/7/m785050959-a43c5e69985219f6805d7f57.svg" />
-
-<img src="https://img.shields.io/mozilla-observatory/grade-score/quiet-fjord-56939.herokuapp.com?publish.svg" />
+<a href="https://codecov.io/gh/nelsonatgithub/gobarber-node"><img src="https://img.shields.io/codecov/c/github/nelsonatgithub/gobarber-node/dev.svg" /></a>
+<a href="https://stats.uptimerobot.com/Wj6Alhjy9q/785050959"><img src="https://img.shields.io/uptimerobot/status/m785050959-a43c5e69985219f6805d7f57.svg" /></a>
+<a href="https://stats.uptimerobot.com/Wj6Alhjy9q/785050959"><img src="https://img.shields.io/uptimerobot/ratio/7/m785050959-a43c5e69985219f6805d7f57.svg" /></a>
+<a href="https://observatory.mozilla.org/analyze/quiet-fjord-56939.herokuapp.com"><img src="https://img.shields.io/mozilla-observatory/grade-score/quiet-fjord-56939.herokuapp.com?publish.svg" /></a>
 
 </p>
 </html>
