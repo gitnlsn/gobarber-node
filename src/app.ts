@@ -1,4 +1,7 @@
-import express from 'express';
+import express, {
+    Response,
+    Request,
+} from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 
@@ -75,6 +78,11 @@ export async function GoBarberServer({
 
     /* Authentication related routes */
     app.use('/user', routes.SessionRouter);
+
+    app.get('/', (req: Request, res: Response) => res.status(200).json({
+        status: 'ok',
+        message: 'hello client',
+    }));
 
     app.use(errorMidleware);
     return app;
