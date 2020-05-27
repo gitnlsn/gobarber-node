@@ -40,6 +40,16 @@ export async function GoBarberServer({
     if (forceHttps) app.use(ForceHttpsMiddleware);
     app.use(express.json());
     app.use(helmet());
+    app.use(helmet.contentSecurityPolicy({
+        browserSniff: false,
+        reportOnly: true,
+        directives: {
+            defaultSrc: ['\'none\''],
+            imgSrc: ['\'none\''],
+            scriptSrc: ['\'none\''],
+            styleSrc: ['\'none\''],
+        },
+    }));
     app.use(cors());
 
     /*
