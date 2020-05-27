@@ -23,6 +23,7 @@ routes.post('/register', async (
 ) => {
     try {
         const {
+            name,
             email,
             password,
         } = request.body;
@@ -30,6 +31,7 @@ routes.post('/register', async (
         const service = container.resolve(RegisterUserService);
 
         const { user, token } = await service.execute({
+            name,
             email,
             password,
         });
@@ -106,7 +108,7 @@ routes.post('/password/forgot', async (
             user,
         } = await forgotService.execute({ email });
 
-        const link = `https://${appDomainName}/client/password/reset?token=${resetPasswordToken}`;
+        const link = `https://${appDomainName}/reset-password?token=${resetPasswordToken}`;
         jet.sendMail({
             from: {
                 email: emailSender,
