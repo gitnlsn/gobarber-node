@@ -42,7 +42,6 @@ export async function GoBarberServer({
     app.use(helmet());
     app.use(helmet.contentSecurityPolicy({
         browserSniff: false,
-        reportOnly: true,
         directives: {
             defaultSrc: ['\'none\''],
             imgSrc: ['\'none\''],
