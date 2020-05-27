@@ -6,6 +6,12 @@
 
 <img src="https://img.shields.io/codecov/c/github/nelsonatgithub/gobarber-node/dev.svg" />
 
+<img src="https://img.shields.io/uptimerobot/status/m785050959-a43c5e69985219f6805d7f57.svg" />
+
+<img src="https://img.shields.io/uptimerobot/ratio/7/m785050959-a43c5e69985219f6805d7f57.svg" />
+
+<img src="https://img.shields.io/mozilla-observatory/grade-score/quiet-fjord-56939.herokuapp.com?publish.svg" />
+
 </p>
 </html>
 

@@ -1,16 +1,20 @@
-import 'reflect-metadata';
-
 import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+
 import { Connection } from 'typeorm';
 
-import cors from 'cors';
+/* Dependency Containers */
+import registerRepositories from './database/container';
+import registerServices from './services/container';
+
+/* Routes */
 import routes from './network/routers';
+
+/* MIddlewares */
 import errorMidleware from './errors/AppErrorMiddleware';
 import AuthenticateMiddleware from './network/middlewares/AuthenticateMiddleware';
 import ForceHttpsMiddleware from './network/middlewares/ForceHttpsMiddleware';
-
-import registerRepositories from './database/container';
-import registerServices from './services/container';
 
 export interface GoBarberConfigs {
     typeormConnection: Connection;
@@ -32,6 +36,7 @@ export async function GoBarberServer({
 
     if (forceHttps) app.use(ForceHttpsMiddleware);
     app.use(express.json());
+    app.use(helmet());
     app.use(cors());
 
     /*

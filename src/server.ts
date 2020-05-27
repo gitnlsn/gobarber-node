@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import 'reflect-metadata';
+
 import dotenv from 'dotenv';
 import { createConnection } from 'typeorm';
 import { GoBarberServer } from './app';
